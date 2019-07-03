@@ -1,11 +1,22 @@
+/* Includes ------------------------------------------------------------------*/
+
 #include "main.h"
 
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 
 void SystemClock_Config(void);
 
 /* Private functions ---------------------------------------------------------*/
 
+/**
+ * @brief  Main program
+ * @param  None
+ * @retval None
+ */
 int main(void)
 {
     HAL_Init();
@@ -19,21 +30,21 @@ int main(void)
 
 #if defined(STM32F1)
 /**
-  * @brief  System Clock Configuration
-  *         The system Clock is configured as follow :
-  *            System Clock source            = PLL (HSE)
-  *            SYSCLK(Hz)                     = 72000000
-  *            HCLK(Hz)                       = 72000000
-  *            AHB Prescaler                  = 1
-  *            APB1 Prescaler                 = 2
-  *            APB2 Prescaler                 = 1
-  *            HSE Frequency(Hz)              = 8000000
-  *            HSE PREDIV1                    = 1
-  *            PLL2MUL                        = 9
-  *            Flash Latency(WS)              = 2
-  * @param  None
-  * @retval None
-  */
+ * @brief  System Clock Configuration
+ *         The system Clock is configured as follow :
+ *            System Clock source            = PLL (HSE)
+ *            SYSCLK(Hz)                     = 72000000
+ *            HCLK(Hz)                       = 72000000
+ *            AHB Prescaler                  = 1
+ *            APB1 Prescaler                 = 2
+ *            APB2 Prescaler                 = 1
+ *            HSE Frequency(Hz)              = 8000000
+ *            HSE PREDIV1                    = 1
+ *            PLL2MUL                        = 9
+ *            Flash Latency(WS)              = 2
+ * @param  None
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -71,20 +82,20 @@ void SystemClock_Config(void)
 
 #if defined(STM32F0)
 /**
-  * @brief  System Clock Configuration
-  *         The system Clock is configured as follow :
-  *            System Clock source            = PLL (HSE)
-  *            SYSCLK(Hz)                     = 48000000
-  *            HCLK(Hz)                       = 48000000
-  *            AHB Prescaler                  = 1
-  *            APB1 Prescaler                 = 1
-  *            HSE Frequency(Hz)              = 8000000
-  *            PREDIV                         = 1
-  *            PLLMUL                         = 6
-  *            Flash Latency(WS)              = 1
-  * @param  None
-  * @retval None
-  */
+ * @brief  System Clock Configuration
+ *         The system Clock is configured as follow :
+ *            System Clock source            = PLL (HSE)
+ *            SYSCLK(Hz)                     = 48000000
+ *            HCLK(Hz)                       = 48000000
+ *            AHB Prescaler                  = 1
+ *            APB1 Prescaler                 = 1
+ *            HSE Frequency(Hz)              = 8000000
+ *            PREDIV                         = 1
+ *            PLLMUL                         = 6
+ *            Flash Latency(WS)              = 1
+ * @param  None
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
     RCC_ClkInitTypeDef RCC_ClkInitStruct;
@@ -118,12 +129,12 @@ void SystemClock_Config(void)
 #endif
 
 /**
-  * @brief This function is executed in case of error occurrence.
-  *
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief This function is executed in case of error occurrence.
+ *
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void Error_Handler(const char * file, int line)
 {
     UNUSED(file);
@@ -136,16 +147,15 @@ void Error_Handler(const char * file, int line)
 
 #ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t* file, uint32_t line)
 {
     UNUSED(file);
     UNUSED(line);
 }
-
 #endif
