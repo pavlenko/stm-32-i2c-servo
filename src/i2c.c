@@ -2,12 +2,24 @@
 
 I2C_HandleTypeDef i2c1;
 
+#if defined(CONFIG_HOSTCMD_I2C_SLAVE_ADDR) && defined(CONFIG_LOW_POWER_IDLE) && (I2C_PORT_EC == STM32_I2C1_PORT)
+/* 8MHz i2cclk register settings */
+#define STM32_I2C_TIMINGR_1000MHZ 0x00100306
+#define STM32_I2C_TIMINGR_400MHZ  0x00310309
+#define STM32_I2C_TIMINGR_100MHZ  0x10420f13
+#else
+/* 48MHz i2cclk register settings */
+#define STM32_I2C_TIMINGR_1000MHZ 0x50100103
+#define STM32_I2C_TIMINGR_400MHZ  0x50330309
+#define STM32_I2C_TIMINGR_100MHZ  0xB0421214
+#endif
+
 void MX_I2C1_Init()
 {
     i2c1.Instance = I2C1;
 
 #if defined(STM32F0)
-    i2c1.Init.Timing = 0;//TODO calculate for 400_000
+    i2c1.Init.Timing = STM32_I2C_TIMINGR_400MHZ;//TODO calculate for 400_000
 #endif
 
 #if defined(STM32F1)
@@ -25,6 +37,11 @@ void MX_I2C1_Init()
     if (HAL_I2C_Init(&i2c1) != HAL_OK) {
         Error_Handler(__FILE__, __LINE__);
     }
+
+#ifdef STM32F0
+    /* Enable the Analog I2C Filter */
+    HAL_I2CEx_ConfigAnalogFilter(&i2c1, I2C_ANALOGFILTER_ENABLE);
+#endif
 }
 
 void HAL_I2C_MspInit(I2C_HandleTypeDef* i2c)
