@@ -1,48 +1,56 @@
+/* Includes ------------------------------------------------------------------*/
+
 #include "tim.h"
 
-#include <main.h>
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
 
-TIM_HandleTypeDef tim1;
+extern TIM_HandleTypeDef TIM1_Handle;
+
+/* Private function prototypes -----------------------------------------------*/
+/* Exported functions ------------------------------------------------------- */
 
 void MX_TIM1_Init()
 {
     TIM_OC_InitTypeDef sConfigOC;
     TIM_MasterConfigTypeDef sMasterConfig;
 
-    tim1.Instance           = TIM1;
-    tim1.Init.Prescaler     = (uint32_t) (SystemCoreClock / 1000000) - 1;
-    tim1.Init.CounterMode   = TIM_COUNTERMODE_UP;
-    tim1.Init.Period        = 20000;
-    tim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    TIM1_Handle.Instance           = TIM1;
+    TIM1_Handle.Init.Prescaler     = (uint32_t) (SystemCoreClock / 1000000) - 1;
+    TIM1_Handle.Init.CounterMode   = TIM_COUNTERMODE_UP;
+    TIM1_Handle.Init.Period        = 20000;
+    TIM1_Handle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 
-    HAL_TIM_PWM_Init(&tim1);
+    HAL_TIM_PWM_Init(&TIM1_Handle);
 
     sConfigOC.OCMode     = TIM_OCMODE_PWM1;
     sConfigOC.Pulse      = 1500;
     sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
     sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 
-    HAL_TIM_PWM_ConfigChannel(&tim1, &sConfigOC, TIM_CHANNEL_1);
-    HAL_TIM_PWM_ConfigChannel(&tim1, &sConfigOC, TIM_CHANNEL_2);
-    HAL_TIM_PWM_ConfigChannel(&tim1, &sConfigOC, TIM_CHANNEL_3);
-    HAL_TIM_PWM_ConfigChannel(&tim1, &sConfigOC, TIM_CHANNEL_4);
+    HAL_TIM_PWM_ConfigChannel(&TIM1_Handle, &sConfigOC, TIM_CHANNEL_1);
+    HAL_TIM_PWM_ConfigChannel(&TIM1_Handle, &sConfigOC, TIM_CHANNEL_2);
+    HAL_TIM_PWM_ConfigChannel(&TIM1_Handle, &sConfigOC, TIM_CHANNEL_3);
+    HAL_TIM_PWM_ConfigChannel(&TIM1_Handle, &sConfigOC, TIM_CHANNEL_4);
 
     sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
     sMasterConfig.MasterSlaveMode     = TIM_MASTERSLAVEMODE_ENABLE;
 
-    HAL_TIMEx_MasterConfigSynchronization(&tim1, &sMasterConfig);
+    HAL_TIMEx_MasterConfigSynchronization(&TIM1_Handle, &sMasterConfig);
 
-    HAL_TIM_PWM_Start(&tim1, TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&tim1, TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&tim1, TIM_CHANNEL_3);
-    HAL_TIM_PWM_Start(&tim1, TIM_CHANNEL_4);
+    HAL_TIM_PWM_Start(&TIM1_Handle, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&TIM1_Handle, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&TIM1_Handle, TIM_CHANNEL_3);
+    HAL_TIM_PWM_Start(&TIM1_Handle, TIM_CHANNEL_4);
 }
 
-void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* timPWM)
+void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* tim)
 {
     GPIO_InitTypeDef GPIO_InitStruct;
 
-    if (timPWM->Instance == TIM1) {
+    if (tim->Instance == TIM1) {
         /* GPIOA clock enable */
         __HAL_RCC_GPIOA_CLK_ENABLE();
 
@@ -64,9 +72,9 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* timPWM)
     }
 }
 
-void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef* timPWM)
+void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef* tim)
 {
-    if (timPWM->Instance == TIM1) {
+    if (tim->Instance == TIM1) {
         /* Peripheral clock disable */
         __HAL_RCC_TIM1_CLK_DISABLE();
 
@@ -80,3 +88,5 @@ void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef* timPWM)
         HAL_GPIO_DeInit(GPIOA, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11);
     }
 }
+
+/* Private functions ---------------------------------------------------------*/

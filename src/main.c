@@ -6,6 +6,9 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+
+TIM_HandleTypeDef TIM1_Handle;
+
 /* Private function prototypes -----------------------------------------------*/
 
 void SystemClock_Config(void);

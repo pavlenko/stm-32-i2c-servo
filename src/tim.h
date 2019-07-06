@@ -1,3 +1,4 @@
+/* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __TIM_H
 #define __TIM_H
 
@@ -5,11 +6,18 @@
 extern "C" {
 #endif
 
-#include <stm32f1xx_hal.h>
+/* Includes ------------------------------------------------------------------*/
 
-extern TIM_HandleTypeDef tim1;
+#include "main.h"
+
+/* Exported types ------------------------------------------------------------*/
+/* Exported constants --------------------------------------------------------*/
+/* Exported macro ------------------------------------------------------------*/
+/* Exported function prototypes --------------------------------------------- */
 
 void MX_TIM1_Init();
+
+/* Exported functions ------------------------------------------------------- */
 
 #ifdef __cplusplus
 }
