@@ -132,6 +132,30 @@ void SystemClock_Config(void)
 #endif
 
 /**
+  * @brief  Initializes the Global MSP.
+  * @param  None
+  * @retval None
+  */
+void HAL_MspInit(void)
+{
+#ifdef STM32F1
+    /* Alternate Function I/O clock enable */
+    __HAL_RCC_AFIO_CLK_ENABLE();
+#endif
+
+    /* Power interface clock enable */
+    __HAL_RCC_PWR_CLK_ENABLE();
+}
+
+/**
+  * @brief  DeInitializes the Global MSP.
+  * @param  None
+  * @retval None
+  */
+void HAL_MspDeInit(void)
+{}
+
+/**
  * @brief This function is executed in case of error occurrence.
  *
  * @param  file: pointer to the source file name
