@@ -10,7 +10,7 @@
 extern TIM_HandleTypeDef TIM1_Handle;
 
 /* Private function prototypes -----------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+/* Private functions ---------------------------------------------------------*/
 
 void MX_TIM1_Init()
 {
@@ -88,5 +88,3 @@ void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef* tim)
         HAL_GPIO_DeInit(GPIOA, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11);
     }
 }
-
-/* Private functions ---------------------------------------------------------*/
