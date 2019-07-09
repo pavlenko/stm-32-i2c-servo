@@ -27,16 +27,16 @@ void MX_LED_Init(void)
     HAL_GPIO_Init(LED_GPIO_PORT, &GPIO_InitStruct);
 }
 
-inline void MX_LED_ON()
+void MX_LED_ON(uint8_t counter)
 {
-    LED_counter = 255;
+    LED_counter = counter;
 
     HAL_GPIO_WritePin(LED_GPIO_PORT, LED_GPIO_PIN, LED_STATE_ON);
 }
 
-inline void MX_LED_OFF()
+void MX_LED_OFF(uint8_t force)
 {
-    if (LED_counter > 0) {
+    if (force == 0 && LED_counter > 0) {
         LED_counter--;
         return;
     }
@@ -44,7 +44,7 @@ inline void MX_LED_OFF()
     HAL_GPIO_WritePin(LED_GPIO_PORT, LED_GPIO_PIN, LED_STATE_OFF);
 }
 
-inline void MX_LED_PLAY(const uint16_t *data, uint8_t size)
+void MX_LED_PLAY(const uint16_t *data, uint8_t size)
 {
     uint8_t index;
 
@@ -52,6 +52,6 @@ inline void MX_LED_PLAY(const uint16_t *data, uint8_t size)
 
     for (index = 0; index < size; index++) {
         HAL_GPIO_TogglePin(LED_GPIO_PORT, LED_GPIO_PIN);
-        HAL_Delay((uint32_t) *(data + index));
+        HAL_Delay(*(data + index));
     }
 }

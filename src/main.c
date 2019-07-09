@@ -75,9 +75,17 @@ int main(void)
 
     MX_I2C_Init(I2C2, &I2C_Handle, address);
 
+    const uint16_t sequence[] = {
+            100,
+            200,
+            100,
+            1200,
+    };
+
     while (1) {
-        MX_I2C_Dispatch();
-        MX_LED_OFF();
+        MX_LED_PLAY(sequence, 4);
+        //MX_I2C_Dispatch();
+        //MX_LED_OFF();
         __NOP();//TODO dispatch logic
     }
 }
