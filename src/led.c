@@ -7,7 +7,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-static volatile uint8_t LED_counter;
+static volatile uint32_t LED_counter;
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -29,15 +29,14 @@ void MX_LED_Init(void)
 
 void MX_LED_ON(uint8_t counter)
 {
-    LED_counter = counter;
+    LED_counter = HAL_GetTick() + counter;
 
     HAL_GPIO_WritePin(LED_GPIO_PORT, LED_GPIO_PIN, LED_STATE_ON);
 }
 
 void MX_LED_OFF(uint8_t force)
 {
-    if (force == 0 && LED_counter > 0) {
-        LED_counter--;
+    if (force == 0 && LED_counter > HAL_GetTick()) {
         return;
     }
 
