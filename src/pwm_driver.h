@@ -14,10 +14,14 @@ extern "C" {
 /** Instructions **************************************************************/
 
 // Register read
-#define PWM_DRIVER_CMD_R_REGISTER(_reg_) ((0x00U) | ((0x3FU) & (_reg_)))
+#define PWM_DRIVER_CMD_R_CODE            0x00U
+#define PWM_DRIVER_CMD_R_MASK            0x3FU
+#define PWM_DRIVER_CMD_R_REGISTER(_reg_) ((PWM_DRIVER_CMD_R_CODE) | ((PWM_DRIVER_CMD_R_MASK) & (_reg_)))
 
 // Register write
-#define PWM_DRIVER_CMD_W_REGISTER(_reg_) ((0x40U) | ((0x3FU) & (_reg_)))
+#define PWM_DRIVER_CMD_W_CODE            0x40U
+#define PWM_DRIVER_CMD_W_MASK            0x3FU
+#define PWM_DRIVER_CMD_W_REGISTER(_reg_) ((PWM_DRIVER_CMD_W_CODE) | ((PWM_DRIVER_CMD_W_MASK) & (_reg_)))
 
 /** Registers *****************************************************************/
 
