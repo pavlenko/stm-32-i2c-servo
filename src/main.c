@@ -47,7 +47,6 @@ uint8_t I2C_responseSize;
 /* Private function prototypes -----------------------------------------------*/
 
 void SystemClock_Config(void);
-void MX_I2C_Dispatch(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -75,18 +74,31 @@ int main(void)
 
     MX_I2C_Init(I2C2, &I2C_Handle, address);
 
-    const uint16_t sequence[] = {
-            100,
-            200,
-            100,
-            1200,
-    };
+//    const uint16_t sequence[] = {
+//            100,
+//            200,
+//            100,
+//            1200,
+//    };
 
     while (1) {
-        MX_LED_PLAY(sequence, 4);
-        //MX_I2C_Dispatch();
-        //MX_LED_OFF();
-        __NOP();//TODO dispatch logic
+//        MX_LED_PLAY(sequence, 4);
+        if (I2C_status == I2C_STATUS_READY) {
+            if (HAL_I2C_EnableListen_IT(&I2C_Handle) != HAL_OK) {
+                Error_Handler(__FILE__, __LINE__);
+            }
+
+            I2C_status = I2C_STATUS_LISTEN;
+        }
+
+        if (I2C_status == I2C_STATUS_COMPLETE) {
+            I2C_rxBufferSize = 0;
+            I2C_txBufferSize = 0;
+
+            I2C_status = I2C_STATUS_READY;
+        }
+
+        MX_LED_OFF(0);
     }
 }
 
@@ -162,26 +174,10 @@ void HAL_MspInit(void)
 void HAL_MspDeInit(void)
 {}
 
-void MX_I2C_Dispatch(void)
-{
-    if (I2C_status == I2C_STATUS_READY) {
-        if (HAL_I2C_EnableListen_IT(&I2C_Handle) != HAL_OK) {
-            Error_Handler(__FILE__, __LINE__);
-        }
-
-        I2C_status = I2C_STATUS_LISTEN;
-    }
-
-    if (I2C_status == I2C_STATUS_COMPLETE) {
-        I2C_rxBufferSize = 0;
-        I2C_txBufferSize = 0;
-
-        I2C_status = I2C_STATUS_READY;
-    }
-}
-
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t address)
 {
+    MX_LED_ON(255);
+
     if (i2c->Instance == I2C2) {
         I2C_status = I2C_STATUS_BUSY;
 
@@ -205,6 +201,8 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
 
 void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
 {
+    MX_LED_ON(255);
+
     if (i2c->Instance == I2C2) {
         I2C_status = I2C_STATUS_COMPLETE;
     }
@@ -212,7 +210,7 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
 
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
 {
-    //LED(LED_ON);
+    MX_LED_ON(255);
 
     if (i2c->Instance == I2C_Handle.Instance) {
         if (I2C_rxBufferData[0] == 0x00) {
@@ -231,7 +229,7 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
 
 void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *i2c)
 {
-    //LED(LED_ON);
+    MX_LED_ON(255);
 
     if (i2c->Instance == I2C_Handle.Instance) {
         if (HAL_I2C_GetError(i2c) != HAL_I2C_ERROR_AF) {
