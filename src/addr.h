@@ -1,6 +1,6 @@
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __GPIO_H
-#define __GPIO_H
+#ifndef __ADDR_H
+#define __ADDR_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,10 +17,12 @@ extern "C" {
 /* Exported variables --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 
-void MX_GPIO_Init(void);
+void MX_ADDR_Init(void);
+
+uint8_t MX_ADDR_Read(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //__GPIO_H
+#endif //__ADDR_H

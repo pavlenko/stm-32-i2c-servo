@@ -2,10 +2,10 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include "main.h"
-#include "gpio.h"
 #include "i2c.h"
 #include "led.h"
 #include "tim.h"
+#include "addr.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -36,12 +36,10 @@ int main(void)
     MX_TIM_PWM_Init(TIM1, &TIM1_Handle);
     MX_TIM_PWM_Init(TIM1, &TIM4_Handle);
 
-    MX_GPIO_Init();
+    MX_ADDR_Init();
     MX_LED_Init();
 
-    uint8_t address = (uint8_t) (ADDRESS_PORT->IDR & (ADDRESS_PIN_0|ADDRESS_PIN_1|ADDRESS_PIN_2|ADDRESS_PIN_3));
-
-    MX_I2C_Init(I2C2, &I2C2_Handle, address);
+    MX_I2C_Init(I2C2, &I2C2_Handle, MX_ADDR_Read());
 
     while (1) {
         MX_LED_OFF();
