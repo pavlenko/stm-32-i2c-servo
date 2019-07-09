@@ -36,7 +36,7 @@ TIM_HandleTypeDef TIM1_Handle;
 TIM_HandleTypeDef TIM4_Handle;
 
 //TODO collect directly pointers to output compare registers
-PWM_pulse_t PWM_pulses[] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint16_t PWM_pulses[] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 uint8_t I2C_status;
 uint8_t I2C_rxBufferData[I2C_RX_BUFFER_MAX];
@@ -83,7 +83,14 @@ int main(void)
 
     MX_I2C_Init(I2C2, &I2C_Handle, address);
 
+    uint32_t tick = HAL_GetTick();
+
     while (1) {
+        if (tick < HAL_GetTick()) {
+            tick = HAL_GetTick() + 1950;
+            MX_LED_ON(50);
+        }
+
         if (I2C_status == I2C_STATUS_READY) {
             if (HAL_I2C_EnableListen_IT(&I2C_Handle) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
@@ -219,12 +226,12 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
     if (i2c->Instance == I2C_Handle.Instance) {
         if (PWM_DRIVER_CMD_R_CODE == (I2C_rxBufferData[0] & ~PWM_DRIVER_CMD_R_MASK)) {
             //TODO test
-            I2C_responseData = &(PWM_pulses[(I2C_rxBufferData[0] & PWM_DRIVER_CMD_R_MASK)].bytes[0]);
+            I2C_responseData = (uint8_t *) &PWM_pulses[(I2C_rxBufferData[0] & PWM_DRIVER_CMD_R_MASK)];
             I2C_responseSize = 2;
         } else if (PWM_DRIVER_CMD_W_CODE == (I2C_rxBufferData[0] & ~PWM_DRIVER_CMD_W_MASK)) {
             //TODO test
 
-            if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, &I2C_rxBufferData[I2C_rxBufferSize], 2, I2C_FIRST_FRAME) != HAL_OK) {
+            if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, (uint8_t *) &PWM_pulses[(I2C_rxBufferData[0] & PWM_DRIVER_CMD_R_MASK)], 2, I2C_FIRST_FRAME) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
             }
 
