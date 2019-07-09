@@ -1,5 +1,6 @@
-#include <sched.h>
 /* Includes ------------------------------------------------------------------*/
+
+#include <string.h>
 
 #include "main.h"
 #include "i2c.h"
@@ -8,7 +9,19 @@
 #include "addr.h"
 
 /* Private typedef -----------------------------------------------------------*/
+
+enum {
+    I2C_STATUS_READY    = 0,
+    I2C_STATUS_LISTEN   = 1,
+    I2C_STATUS_BUSY     = 2,
+    I2C_STATUS_COMPLETE = 3,
+} I2C_status_t;
+
 /* Private define ------------------------------------------------------------*/
+
+#define I2C_RX_BUFFER_MAX 32
+#define I2C_TX_BUFFER_MAX 32
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
@@ -16,9 +29,25 @@ I2C_HandleTypeDef I2C_Handle;
 TIM_HandleTypeDef TIM1_Handle;
 TIM_HandleTypeDef TIM4_Handle;
 
+uint8_t I2C_status;
+uint8_t I2C_rxBufferData[I2C_RX_BUFFER_MAX];
+uint8_t I2C_rxBufferSize;
+uint8_t I2C_txBufferData[I2C_TX_BUFFER_MAX];
+uint8_t I2C_txBufferSize;
+
+uint8_t I2C_responseIndex;
+const char* I2C_responseValue[] = {
+        "STM32F103xx",
+        "1.2.3"
+};
+
+uint8_t *I2C_responseData;
+uint8_t I2C_responseSize;
+
 /* Private function prototypes -----------------------------------------------*/
 
 void SystemClock_Config(void);
+void MX_I2C_Dispatch(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -47,6 +76,7 @@ int main(void)
     MX_I2C_Init(I2C2, &I2C_Handle, address);
 
     while (1) {
+        MX_I2C_Dispatch();
         MX_LED_OFF();
         __NOP();//TODO dispatch logic
     }
@@ -123,6 +153,86 @@ void HAL_MspInit(void)
  */
 void HAL_MspDeInit(void)
 {}
+
+void MX_I2C_Dispatch(void)
+{
+    if (I2C_status == I2C_STATUS_READY) {
+        if (HAL_I2C_EnableListen_IT(&I2C_Handle) != HAL_OK) {
+            Error_Handler(__FILE__, __LINE__);
+        }
+
+        I2C_status = I2C_STATUS_LISTEN;
+    }
+
+    if (I2C_status == I2C_STATUS_COMPLETE) {
+        I2C_rxBufferSize = 0;
+        I2C_txBufferSize = 0;
+
+        I2C_status = I2C_STATUS_READY;
+    }
+}
+
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t address)
+{
+    if (i2c->Instance == I2C2) {
+        I2C_status = I2C_STATUS_BUSY;
+
+        // First of all, check the transfer direction to call the correct Slave Interface
+        if (direction == I2C_DIRECTION_TRANSMIT) {
+            if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, &I2C_rxBufferData[I2C_rxBufferSize], 1, I2C_FIRST_FRAME) != HAL_OK) {
+                Error_Handler(__FILE__, __LINE__);
+            }
+
+            I2C_rxBufferSize++;
+        } else {
+            I2C_responseData = (uint8_t*) (I2C_responseValue[I2C_responseIndex]);
+            I2C_responseSize = strlen((char *) (I2C_responseValue[I2C_responseIndex]));
+
+            if (HAL_I2C_Slave_Sequential_Transmit_IT(i2c, I2C_responseData, I2C_responseSize, I2C_LAST_FRAME) != HAL_OK) {
+                Error_Handler(__FILE__, __LINE__);
+            }
+        }
+    }
+}
+
+void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
+{
+    if (i2c->Instance == I2C2) {
+        I2C_status = I2C_STATUS_COMPLETE;
+    }
+}
+
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
+{
+    //LED(LED_ON);
+
+    if (i2c->Instance == I2C_Handle.Instance) {
+        if (I2C_rxBufferData[0] == 0x00) {
+            I2C_responseIndex = 0;
+        } else if (I2C_rxBufferData[0] == 0x01) {
+            I2C_responseIndex = 1;
+        } else {
+            if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, &I2C_rxBufferData[I2C_rxBufferSize], 1, I2C_FIRST_FRAME) != HAL_OK) {
+                Error_Handler(__FILE__, __LINE__);
+            }
+
+            I2C_rxBufferSize++;
+        }
+    }
+}
+
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *i2c)
+{
+    //LED(LED_ON);
+
+    if (i2c->Instance == I2C_Handle.Instance) {
+        if (HAL_I2C_GetError(i2c) != HAL_I2C_ERROR_AF) {
+            Error_Handler(__FILE__, __LINE__);
+        }
+
+        I2C_status = I2C_STATUS_COMPLETE;
+    }
+}
 
 /**
  * @brief  This function handles I2C2 event interrupt.
@@ -278,7 +388,17 @@ void Error_Handler(const char * file, int line)
     UNUSED(file);
     UNUSED(line);
 
+    const uint16_t sequence[] = {
+            100,
+            200,
+            100,
+            200,
+            100,
+            1200,
+    };
+
     while (1) {
+        MX_LED_PLAY(sequence, 6);
         __NOP();
     }
 }

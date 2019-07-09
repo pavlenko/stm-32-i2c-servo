@@ -20,10 +20,6 @@ extern "C" {
 #define ADDRESS_PIN_2 GPIO_PIN_2
 #define ADDRESS_PIN_3 GPIO_PIN_3
 
-#define LED_GPIO_CLK_ENABLE() __HAL_RCC_GPIOA_CLK_ENABLE()
-#define LED_GPIO_PORT         GPIOA
-#define LED_GPIO_PIN          GPIO_PIN_4
-
 /* Exported functions ------------------------------------------------------- */
 
 void I2C1_EV_IRQHandler(void);

@@ -31,7 +31,7 @@ inline void MX_LED_ON()
 {
     LED_counter = 255;
 
-    LED_GPIO_PORT->BSRR = LED_GPIO_PIN;
+    HAL_GPIO_WritePin(LED_GPIO_PORT, LED_GPIO_PIN, LED_STATE_ON);
 }
 
 inline void MX_LED_OFF()
@@ -41,5 +41,17 @@ inline void MX_LED_OFF()
         return;
     }
 
-    LED_GPIO_PORT->BRR = LED_GPIO_PIN;
+    HAL_GPIO_WritePin(LED_GPIO_PORT, LED_GPIO_PIN, LED_STATE_OFF);
+}
+
+inline void MX_LED_PLAY(const uint16_t *data, uint8_t size)
+{
+    uint8_t index;
+
+    HAL_GPIO_WritePin(LED_GPIO_PORT, LED_GPIO_PIN, LED_STATE_OFF);
+
+    for (index = 0; index < size; index++) {
+        HAL_GPIO_TogglePin(LED_GPIO_PORT, LED_GPIO_PIN);
+        HAL_Delay((uint32_t) *(data + index));
+    }
 }
