@@ -12,7 +12,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-I2C_HandleTypeDef I2C2_Handle;
+I2C_HandleTypeDef I2C_Handle;
 TIM_HandleTypeDef TIM1_Handle;
 TIM_HandleTypeDef TIM4_Handle;
 
@@ -44,7 +44,7 @@ int main(void)
     address = (0xE0u & MX_ADDR_Read());
     address = address << 1u;
 
-    MX_I2C_Init(I2C2, &I2C2_Handle, address);
+    MX_I2C_Init(I2C2, &I2C_Handle, address);
 
     while (1) {
         MX_LED_OFF();
@@ -123,6 +123,54 @@ void HAL_MspInit(void)
  */
 void HAL_MspDeInit(void)
 {}
+
+/**
+ * @brief  This function handles I2C2 event interrupt.
+ * @param  None
+ * @retval None
+ */
+void I2C1_EV_IRQHandler(void)
+{
+    if (I2C_Handle.Instance == I2C1) {
+        HAL_I2C_EV_IRQHandler(&I2C_Handle);
+    }
+}
+
+/**
+ * @brief This function handles I2C2 error interrupt.
+ * @param  None
+ * @retval None
+ */
+void I2C1_ER_IRQHandler(void)
+{
+    if (I2C_Handle.Instance == I2C1) {
+        HAL_I2C_ER_IRQHandler(&I2C_Handle);
+    }
+}
+
+/**
+ * @brief  This function handles I2C2 event interrupt.
+ * @param  None
+ * @retval None
+ */
+void I2C2_EV_IRQHandler(void)
+{
+    if (I2C_Handle.Instance == I2C2) {
+        HAL_I2C_EV_IRQHandler(&I2C_Handle);
+    }
+}
+
+/**
+ * @brief This function handles I2C2 error interrupt.
+ * @param  None
+ * @retval None
+ */
+void I2C2_ER_IRQHandler(void)
+{
+    if (I2C_Handle.Instance == I2C2) {
+        HAL_I2C_ER_IRQHandler(&I2C_Handle);
+    }
+}
 
 /**
  * @brief   This function handles NMI exception.

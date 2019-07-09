@@ -26,6 +26,10 @@ extern "C" {
 
 /* Exported functions ------------------------------------------------------- */
 
+void I2C1_EV_IRQHandler(void);
+void I2C1_ER_IRQHandler(void);
+void I2C2_EV_IRQHandler(void);
+void I2C2_ER_IRQHandler(void);
 void NMI_Handler(void);
 void HardFault_Handler(void);
 void MemManage_Handler(void);
