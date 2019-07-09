@@ -12,7 +12,7 @@ extern "C" {
 
 extern I2C_HandleTypeDef i2c1;
 
-void MX_I2C1_Init();
+void MX_I2C1_Init(void);
 
 #ifdef __cplusplus
 }
