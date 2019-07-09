@@ -29,6 +29,8 @@ void SystemClock_Config(void);
  */
 int main(void)
 {
+    uint8_t address;
+
     HAL_Init();
 
     SystemClock_Config();
@@ -39,7 +41,10 @@ int main(void)
     MX_ADDR_Init();
     MX_LED_Init();
 
-    MX_I2C_Init(I2C2, &I2C2_Handle, MX_ADDR_Read());
+    address = (0xE0u & MX_ADDR_Read());
+    address = address << 1u;
+
+    MX_I2C_Init(I2C2, &I2C2_Handle, address);
 
     while (1) {
         MX_LED_OFF();
