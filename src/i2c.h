@@ -1,3 +1,4 @@
+/* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __I2C_H
 #define __I2C_H
 
@@ -5,14 +6,17 @@
 extern "C" {
 #endif
 
+/* Includes ------------------------------------------------------------------*/
+
 #include "main.h"
 
-#define I2C_OWN_ADDRESS_1 0x3C
-#define I2C_OWN_ADDRESS_2 0xFF
+/* Exported types ------------------------------------------------------------*/
+/* Exported constants --------------------------------------------------------*/
+/* Exported macro ------------------------------------------------------------*/
+/* Exported function prototypes --------------------------------------------- */
+/* Exported functions ------------------------------------------------------- */
 
-extern I2C_HandleTypeDef i2c1;
-
-void MX_I2C1_Init(void);
+void MX_I2C_Init(I2C_TypeDef *i2c, I2C_HandleTypeDef *handle, uint16_t address);
 
 #ifdef __cplusplus
 }

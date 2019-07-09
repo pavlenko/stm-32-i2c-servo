@@ -12,6 +12,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
+I2C_HandleTypeDef I2C2_Handle;
 TIM_HandleTypeDef TIM1_Handle;
 TIM_HandleTypeDef TIM4_Handle;
 
@@ -39,8 +40,8 @@ int main(void)
     MX_LED_Init();
 
     uint8_t address = (uint8_t) (ADDRESS_PORT->IDR & (ADDRESS_PIN_0|ADDRESS_PIN_1|ADDRESS_PIN_2|ADDRESS_PIN_3));
-    UNUSED(address);
-    MX_I2C1_Init(/*address*/);
+
+    MX_I2C_Init(I2C2, &I2C2_Handle, address);
 
     while (1) {
         MX_LED_OFF();
