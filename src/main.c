@@ -1,9 +1,11 @@
+#include <sched.h>
 /* Includes ------------------------------------------------------------------*/
 
 #include "main.h"
 #include "gpio.h"
 #include "i2c.h"
 #include "led.h"
+#include "tim.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -11,6 +13,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 TIM_HandleTypeDef TIM1_Handle;
+TIM_HandleTypeDef TIM4_Handle;
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -29,12 +32,15 @@ int main(void)
 
     SystemClock_Config();
 
+    MX_TIM_PWM_Init(TIM1, &TIM1_Handle);
+    MX_TIM_PWM_Init(TIM1, &TIM4_Handle);
+
     MX_GPIO_Init();
     MX_LED_Init();
 
     uint8_t address = (uint8_t) (ADDRESS_PORT->IDR & (ADDRESS_PIN_0|ADDRESS_PIN_1|ADDRESS_PIN_2|ADDRESS_PIN_3));
-
-    MX_I2C1_Init(address);
+    UNUSED(address);
+    MX_I2C1_Init(/*address*/);
 
     while (1) {
         MX_LED_OFF();

@@ -15,7 +15,7 @@ extern "C" {
 /* Exported macro ------------------------------------------------------------*/
 /* Exported function prototypes --------------------------------------------- */
 
-void MX_TIM1_Init();
+void MX_TIM_PWM_Init(TIM_TypeDef *tim, TIM_HandleTypeDef *handle);
 
 /* Exported functions ------------------------------------------------------- */
 

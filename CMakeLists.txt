@@ -3,9 +3,7 @@ project(stm-32-i2c-servo)
 
 include(CMakeListsPrivate.txt)
 
-include_directories("$ENV{HOMEDRIVE}$ENV{HOMEPATH}/.platformio/packages/framework-stm32cube/f0/Drivers/STM32F0xx_HAL_Driver/Src")
 include_directories("$ENV{HOMEDRIVE}$ENV{HOMEPATH}/.platformio/packages/framework-stm32cube/f1/Drivers/STM32F1xx_HAL_Driver/Src")
-include_directories("$ENV{HOME}/.platformio/packages/framework-stm32cube/f0/Drivers/STM32F0xx_HAL_Driver/Src")
 include_directories("$ENV{HOME}/.platformio/packages/framework-stm32cube/f1/Drivers/STM32F1xx_HAL_Driver/Src")
 
 add_custom_target(

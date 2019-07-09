@@ -14,10 +14,6 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 
-#define I2Cx_CLK_ENABLE()               __HAL_RCC_I2C1_CLK_ENABLE()
-#define I2Cx_SDA_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOB_CLK_ENABLE()
-#define I2Cx_SCL_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOB_CLK_ENABLE()
-
 #define ADDRESS_PORT  GPIOA
 #define ADDRESS_PIN_0 GPIO_PIN_0
 #define ADDRESS_PIN_1 GPIO_PIN_1
@@ -27,10 +23,6 @@ extern "C" {
 #define LED_GPIO_CLK_ENABLE() __HAL_RCC_GPIOA_CLK_ENABLE()
 #define LED_GPIO_PORT         GPIOA
 #define LED_GPIO_PIN          GPIO_PIN_4
-
-#define I2C1_PORT    GPIOA
-#define I2C1_PIN_SCL GPIO_PIN_9
-#define I2C1_PIN_SDA GPIO_PIN_10
 
 /* Exported functions ------------------------------------------------------- */
 
