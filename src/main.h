@@ -13,13 +13,6 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
-
-#define ADDRESS_PORT  GPIOA
-#define ADDRESS_PIN_0 GPIO_PIN_0
-#define ADDRESS_PIN_1 GPIO_PIN_1
-#define ADDRESS_PIN_2 GPIO_PIN_2
-#define ADDRESS_PIN_3 GPIO_PIN_3
-
 /* Exported functions ------------------------------------------------------- */
 
 void I2C1_EV_IRQHandler(void);
