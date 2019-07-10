@@ -52,17 +52,6 @@ uint16_t PWM_pulses[] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 uint8_t I2C_rxBufferData[I2C_RX_BUFFER_MAX];
 uint8_t I2C_rxBufferSize;
-uint8_t I2C_txBufferData[I2C_TX_BUFFER_MAX];
-uint8_t I2C_txBufferSize;
-
-uint8_t I2C_responseIndex;
-const char* I2C_responseValue[] = {
-        "STM32F103xx",
-        "1.2.3"
-};
-
-uint8_t *I2C_responseData;
-uint8_t I2C_responseSize;
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -112,10 +101,6 @@ int main(void)
 
         if (I2Cx.status == I2C_STATUS_COMPLETE) {
             I2C_rxBufferSize = 0;
-            I2C_txBufferSize = 0;
-
-            I2C_responseData = NULL;
-            I2C_responseSize = 0;
 
             I2Cx.txBufferData = NULL;
             I2Cx.txBufferSize = 0;
@@ -227,10 +212,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
 
             I2C_requestCallback();
 
-//            I2C_responseData = (uint8_t*) (I2C_responseValue[I2C_responseIndex]);
-//            I2C_responseSize = strlen((char *) (I2C_responseValue[I2C_responseIndex]));
-            if (HAL_I2C_Slave_Sequential_Transmit_IT(i2c, I2C_responseData, I2C_responseSize, I2C_LAST_FRAME) != HAL_OK) {
-//            if (HAL_I2C_Slave_Sequential_Transmit_IT(i2c, I2Cx.txBufferData, I2Cx.txBufferSize, I2C_LAST_FRAME) != HAL_OK) {
+            if (HAL_I2C_Slave_Sequential_Transmit_IT(i2c, I2Cx.txBufferData, I2Cx.txBufferSize, I2C_LAST_FRAME) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
             }
         }
@@ -257,10 +239,8 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
     if (i2c->Instance == I2Cx.handle->Instance) {
         if (PWM_DRIVER_CMD_R_CODE == (I2C_rxBufferData[0] & ~PWM_DRIVER_CMD_R_MASK)) {
             //TODO test
-            I2C_responseData = (uint8_t *) &PWM_pulses[(I2C_rxBufferData[0] & PWM_DRIVER_CMD_R_MASK)];
-            I2C_responseSize = 2;
-//            I2Cx.txBufferData = (uint8_t *) &PWM_pulses[(I2C_rxBufferData[0] & PWM_DRIVER_CMD_R_MASK)];
-//            I2Cx.txBufferSize = 2;
+            I2Cx.txBufferData = (uint8_t *) &PWM_pulses[(I2C_rxBufferData[0] & PWM_DRIVER_CMD_R_MASK)];
+            I2Cx.txBufferSize = 2;
         } else if (PWM_DRIVER_CMD_W_CODE == (I2C_rxBufferData[0] & ~PWM_DRIVER_CMD_W_MASK)) {
             //TODO test
 
