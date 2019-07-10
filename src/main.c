@@ -186,6 +186,12 @@ void HAL_MspInit(void)
 void HAL_MspDeInit(void)
 {}
 
+void I2C_receiveCallback()
+{}
+
+void I2C_requestCallback()
+{}
+
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t address)
 {
     MX_LED_ON(50);
@@ -203,6 +209,8 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
         } else {
             I2C_status = I2C_STATUS_BUSY_TX;
 
+            I2C_requestCallback();
+
 //            I2C_responseData = (uint8_t*) (I2C_responseValue[I2C_responseIndex]);
 //            I2C_responseSize = strlen((char *) (I2C_responseValue[I2C_responseIndex]));
 
@@ -218,6 +226,10 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
     MX_LED_ON(50);
 
     if (i2c->Instance == I2C_Handle.Instance) {
+        if (I2C_status == I2C_STATUS_BUSY_RX) {
+            I2C_receiveCallback();
+        }
+
         I2C_status = I2C_STATUS_COMPLETE;
     }
 }
