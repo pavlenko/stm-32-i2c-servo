@@ -19,8 +19,9 @@ typedef union {
 enum {
     I2C_STATUS_READY    = 0,
     I2C_STATUS_LISTEN   = 1,
-    I2C_STATUS_BUSY     = 2,
-    I2C_STATUS_COMPLETE = 3,
+    I2C_STATUS_BUSY_RX  = 2,
+    I2C_STATUS_BUSY_TX  = 3,
+    I2C_STATUS_COMPLETE = 4,
 } I2C_status_t;
 
 /* Private define ------------------------------------------------------------*/
@@ -190,16 +191,18 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
     MX_LED_ON(50);
 
     if (i2c->Instance == I2C2) {
-        I2C_status = I2C_STATUS_BUSY;
-
         // First of all, check the transfer direction to call the correct Slave Interface
         if (direction == I2C_DIRECTION_TRANSMIT) {
+            I2C_status = I2C_STATUS_BUSY_RX;
+
             if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, &I2C_rxBufferData[I2C_rxBufferSize], 1, I2C_FIRST_FRAME) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
             }
 
             I2C_rxBufferSize++;
         } else {
+            I2C_status = I2C_STATUS_BUSY_TX;
+
 //            I2C_responseData = (uint8_t*) (I2C_responseValue[I2C_responseIndex]);
 //            I2C_responseSize = strlen((char *) (I2C_responseValue[I2C_responseIndex]));
 
