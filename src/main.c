@@ -24,6 +24,15 @@ enum {
     I2C_STATUS_COMPLETE = 4,
 } I2C_status_t;
 
+typedef struct {
+    I2C_HandleTypeDef *handle;
+    uint8_t status;
+    uint8_t *rxBufferData;
+    uint8_t rxBufferSize;
+    uint8_t *txBufferData;
+    uint8_t txBufferSize;
+} I2C_t;
+
 /* Private define ------------------------------------------------------------*/
 
 #define I2C_RX_BUFFER_MAX 32
@@ -32,7 +41,9 @@ enum {
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-I2C_HandleTypeDef I2C_Handle;
+I2C_HandleTypeDef I2C_Handle;//WARNING do not use directly, at least for now
+I2C_t I2Cx = {&I2C_Handle};
+
 TIM_HandleTypeDef TIM1_Handle;
 TIM_HandleTypeDef TIM4_Handle;
 
@@ -82,7 +93,7 @@ int main(void)
     address = MX_ADDR_Read();
     address = address << 1u;
 
-    MX_I2C_Init(I2C2, &I2C_Handle, address);
+    MX_I2C_Init(I2C2, I2Cx.handle, address);
 
     uint32_t tick = HAL_GetTick();
 
@@ -93,7 +104,7 @@ int main(void)
         }
 
         if (I2C_status == I2C_STATUS_READY) {
-            if (HAL_I2C_EnableListen_IT(&I2C_Handle) != HAL_OK) {
+            if (HAL_I2C_EnableListen_IT(I2Cx.handle) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
             }
 
@@ -106,6 +117,12 @@ int main(void)
 
             I2C_responseData = NULL;
             I2C_responseSize = 0;
+
+            I2Cx.txBufferData = NULL;
+            I2Cx.txBufferSize = 0;
+
+            I2Cx.rxBufferData = NULL;
+            I2Cx.rxBufferSize = 0;
 
             I2C_status = I2C_STATUS_READY;
         }
@@ -196,7 +213,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
 {
     MX_LED_ON(50);
 
-    if (i2c->Instance == I2C_Handle.Instance) {
+    if (i2c->Instance == I2Cx.handle->Instance) {
         // First of all, check the transfer direction to call the correct Slave Interface
         if (direction == I2C_DIRECTION_TRANSMIT) {
             I2C_status = I2C_STATUS_BUSY_RX;
@@ -213,8 +230,8 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
 
 //            I2C_responseData = (uint8_t*) (I2C_responseValue[I2C_responseIndex]);
 //            I2C_responseSize = strlen((char *) (I2C_responseValue[I2C_responseIndex]));
-
             if (HAL_I2C_Slave_Sequential_Transmit_IT(i2c, I2C_responseData, I2C_responseSize, I2C_LAST_FRAME) != HAL_OK) {
+//            if (HAL_I2C_Slave_Sequential_Transmit_IT(i2c, I2Cx.txBufferData, I2Cx.txBufferSize, I2C_LAST_FRAME) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
             }
         }
@@ -225,7 +242,7 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
 {
     MX_LED_ON(50);
 
-    if (i2c->Instance == I2C_Handle.Instance) {
+    if (i2c->Instance == I2Cx.handle->Instance) {
         if (I2C_status == I2C_STATUS_BUSY_RX) {
             I2C_receiveCallback();
         }
@@ -238,11 +255,13 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
 {
     MX_LED_ON(50);
 
-    if (i2c->Instance == I2C_Handle.Instance) {
+    if (i2c->Instance == I2Cx.handle->Instance) {
         if (PWM_DRIVER_CMD_R_CODE == (I2C_rxBufferData[0] & ~PWM_DRIVER_CMD_R_MASK)) {
             //TODO test
             I2C_responseData = (uint8_t *) &PWM_pulses[(I2C_rxBufferData[0] & PWM_DRIVER_CMD_R_MASK)];
             I2C_responseSize = 2;
+//            I2Cx.txBufferData = (uint8_t *) &PWM_pulses[(I2C_rxBufferData[0] & PWM_DRIVER_CMD_R_MASK)];
+//            I2Cx.txBufferSize = 2;
         } else if (PWM_DRIVER_CMD_W_CODE == (I2C_rxBufferData[0] & ~PWM_DRIVER_CMD_W_MASK)) {
             //TODO test
 
@@ -271,7 +290,7 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *i2c)
 {
     MX_LED_ON(50);
 
-    if (i2c->Instance == I2C_Handle.Instance) {
+    if (i2c->Instance == I2Cx.handle->Instance) {
         if (HAL_I2C_GetError(i2c) != HAL_I2C_ERROR_AF) {
             Error_Handler(__FILE__, __LINE__);
         }
@@ -287,8 +306,8 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *i2c)
  */
 void I2C1_EV_IRQHandler(void)
 {
-    if (I2C_Handle.Instance == I2C1) {
-        HAL_I2C_EV_IRQHandler(&I2C_Handle);
+    if (I2C1 == I2Cx.handle->Instance) {
+        HAL_I2C_EV_IRQHandler(I2Cx.handle);
     }
 }
 
@@ -299,8 +318,8 @@ void I2C1_EV_IRQHandler(void)
  */
 void I2C1_ER_IRQHandler(void)
 {
-    if (I2C_Handle.Instance == I2C1) {
-        HAL_I2C_ER_IRQHandler(&I2C_Handle);
+    if (I2C1 == I2Cx.handle->Instance) {
+        HAL_I2C_ER_IRQHandler(I2Cx.handle);
     }
 }
 
@@ -311,8 +330,8 @@ void I2C1_ER_IRQHandler(void)
  */
 void I2C2_EV_IRQHandler(void)
 {
-    if (I2C_Handle.Instance == I2C2) {
-        HAL_I2C_EV_IRQHandler(&I2C_Handle);
+    if (I2C2 == I2Cx.handle->Instance) {
+        HAL_I2C_EV_IRQHandler(I2Cx.handle);
     }
 }
 
@@ -323,8 +342,8 @@ void I2C2_EV_IRQHandler(void)
  */
 void I2C2_ER_IRQHandler(void)
 {
-    if (I2C_Handle.Instance == I2C2) {
-        HAL_I2C_ER_IRQHandler(&I2C_Handle);
+    if (I2C2 == I2Cx.handle->Instance) {
+        HAL_I2C_ER_IRQHandler(I2Cx.handle);
     }
 }
 
