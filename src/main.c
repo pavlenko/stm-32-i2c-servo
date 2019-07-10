@@ -241,12 +241,19 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
             //TODO test
             I2Cx.txBufferData = (uint8_t *) &PWM_pulses[(I2C_rxBufferData[0] & PWM_DRIVER_CMD_R_MASK)];
             I2Cx.txBufferSize = 2;
+
+//            I2Cx.txBufferData = (uint8_t *) (&(TIM1->CCR1) + 2);
+//            I2Cx.txBufferSize = 2;
         } else if (PWM_DRIVER_CMD_W_CODE == (I2C_rxBufferData[0] & ~PWM_DRIVER_CMD_W_MASK)) {
             //TODO test
 
             if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, (uint8_t *) &PWM_pulses[(I2C_rxBufferData[0] & PWM_DRIVER_CMD_R_MASK)], 2, I2C_FIRST_FRAME) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
             }
+
+//            if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, &I2C_rxBufferData[I2C_rxBufferSize], 2, I2C_FIRST_FRAME) != HAL_OK) {
+//                Error_Handler(__FILE__, __LINE__);
+//            }
 
             I2C_rxBufferSize += 2;
         }
