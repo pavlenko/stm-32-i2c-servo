@@ -190,7 +190,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
 {
     MX_LED_ON(50);
 
-    if (i2c->Instance == I2C2) {
+    if (i2c->Instance == I2C_Handle.Instance) {
         // First of all, check the transfer direction to call the correct Slave Interface
         if (direction == I2C_DIRECTION_TRANSMIT) {
             I2C_status = I2C_STATUS_BUSY_RX;
