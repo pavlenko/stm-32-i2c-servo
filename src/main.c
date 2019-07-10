@@ -214,7 +214,7 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
 {
     MX_LED_ON(50);
 
-    if (i2c->Instance == I2C2) {
+    if (i2c->Instance == I2C_Handle.Instance) {
         I2C_status = I2C_STATUS_COMPLETE;
     }
 }
