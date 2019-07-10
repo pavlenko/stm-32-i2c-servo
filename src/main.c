@@ -50,7 +50,6 @@ TIM_HandleTypeDef TIM4_Handle;
 //TODO collect directly pointers to output compare registers
 uint16_t PWM_pulses[] = {0, 0, 0, 0, 0, 0, 0, 0};
 
-uint8_t I2C_status;
 uint8_t I2C_rxBufferData[I2C_RX_BUFFER_MAX];
 uint8_t I2C_rxBufferSize;
 uint8_t I2C_txBufferData[I2C_TX_BUFFER_MAX];
@@ -103,15 +102,15 @@ int main(void)
             MX_LED_ON(50);
         }
 
-        if (I2C_status == I2C_STATUS_READY) {
+        if (I2Cx.status == I2C_STATUS_READY) {
             if (HAL_I2C_EnableListen_IT(I2Cx.handle) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
             }
 
-            I2C_status = I2C_STATUS_LISTEN;
+            I2Cx.status = I2C_STATUS_LISTEN;
         }
 
-        if (I2C_status == I2C_STATUS_COMPLETE) {
+        if (I2Cx.status == I2C_STATUS_COMPLETE) {
             I2C_rxBufferSize = 0;
             I2C_txBufferSize = 0;
 
@@ -124,7 +123,7 @@ int main(void)
             I2Cx.rxBufferData = NULL;
             I2Cx.rxBufferSize = 0;
 
-            I2C_status = I2C_STATUS_READY;
+            I2Cx.status = I2C_STATUS_READY;
         }
 
         MX_LED_OFF(0);
@@ -216,7 +215,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
     if (i2c->Instance == I2Cx.handle->Instance) {
         // First of all, check the transfer direction to call the correct Slave Interface
         if (direction == I2C_DIRECTION_TRANSMIT) {
-            I2C_status = I2C_STATUS_BUSY_RX;
+            I2Cx.status = I2C_STATUS_BUSY_RX;
 
             if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, &I2C_rxBufferData[I2C_rxBufferSize], 1, I2C_FIRST_FRAME) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
@@ -224,7 +223,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
 
             I2C_rxBufferSize++;
         } else {
-            I2C_status = I2C_STATUS_BUSY_TX;
+            I2Cx.status = I2C_STATUS_BUSY_TX;
 
             I2C_requestCallback();
 
@@ -243,11 +242,11 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
     MX_LED_ON(50);
 
     if (i2c->Instance == I2Cx.handle->Instance) {
-        if (I2C_status == I2C_STATUS_BUSY_RX) {
+        if (I2Cx.status == I2C_STATUS_BUSY_RX) {
             I2C_receiveCallback();
         }
 
-        I2C_status = I2C_STATUS_COMPLETE;
+        I2Cx.status = I2C_STATUS_COMPLETE;
     }
 }
 
@@ -295,7 +294,7 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *i2c)
             Error_Handler(__FILE__, __LINE__);
         }
 
-        I2C_status = I2C_STATUS_COMPLETE;
+        I2Cx.status = I2C_STATUS_COMPLETE;
     }
 }
 
