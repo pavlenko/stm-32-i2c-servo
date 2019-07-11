@@ -224,8 +224,8 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
 
     if (i2c->Instance == I2Cx.handle->Instance) {
         if (PWM_driver_cmd == PWM_DRIVER_CMD_W_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
-            PWM_pulses[PWM_driver_reg] = *((uint16_t *) &I2Cx.rxBufferData[1]);
-            TIM1_Handle.Instance->CCR1 = (uint32_t) PWM_pulses[PWM_driver_reg];
+            uint16_t value = *((uint16_t *) &I2Cx.rxBufferData[1]);
+            TIM1_Handle.Instance->CCR1 = (uint32_t) value;
         }
 
         I2Cx.status = I2C_STATUS_COMPLETE;
