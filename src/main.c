@@ -28,9 +28,9 @@ enum {
 typedef struct {
     I2C_HandleTypeDef *handle;
     uint8_t status;
-    uint8_t *rxBufferData;
+    uint8_t rxBufferData[5];
     uint8_t rxBufferSize;
-    uint8_t *txBufferData;
+    uint8_t txBufferData[4];//TODO pre-alloc
     uint8_t txBufferSize;
 } I2C_t;
 
@@ -82,9 +82,6 @@ int main(void)
     address = MX_ADDR_Read();
     address = address << 1u;
 
-    I2Cx.rxBufferData = (uint8_t *) malloc(4);
-    I2Cx.rxBufferSize = 4;
-
     MX_I2C_Init(I2C2, I2Cx.handle, address);
 
     uint32_t tick = HAL_GetTick();
@@ -104,7 +101,6 @@ int main(void)
         }
 
         if (I2Cx.status == I2C_STATUS_COMPLETE) {
-            I2Cx.txBufferData = NULL;
             I2Cx.txBufferSize = 0;
             I2Cx.rxBufferSize = 0;
 
@@ -208,13 +204,14 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
             I2Cx.status = I2C_STATUS_BUSY_TX;
 
             if (PWM_driver_cmd == PWM_DRIVER_CMD_R_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
-                PWM_pulses[PWM_driver_reg] = (uint16_t) TIM1_Handle.Instance->CCR1;
+                uint16_t value = (uint16_t) TIM1_Handle.Instance->CCR1;
 
-                I2Cx.txBufferData = (uint8_t *) &PWM_pulses[PWM_driver_reg];
-                I2Cx.txBufferSize = 2;
+                I2Cx.txBufferData[0] = (uint8_t) value;
+                I2Cx.txBufferData[1] = (uint8_t) (value >> 8);
+                I2Cx.txBufferSize    = 2;
             }
 
-            if (HAL_I2C_Slave_Sequential_Transmit_IT(i2c, I2Cx.txBufferData, I2Cx.txBufferSize, I2C_LAST_FRAME) != HAL_OK) {
+            if (HAL_I2C_Slave_Sequential_Transmit_IT(i2c, &I2Cx.txBufferData[0], I2Cx.txBufferSize, I2C_LAST_FRAME) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
             }
         }
