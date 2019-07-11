@@ -13,26 +13,30 @@ extern "C" {
 
 /** Instructions **************************************************************/
 
+#define PWM_DRIVER_CMD_RW_MASK           0x3FU
+
 // Register read
 #define PWM_DRIVER_CMD_R_CODE            0x00U
-#define PWM_DRIVER_CMD_R_MASK            0x3FU
-#define PWM_DRIVER_CMD_R_REGISTER(_reg_) ((PWM_DRIVER_CMD_R_CODE) | ((PWM_DRIVER_CMD_R_MASK) & (_reg_)))
+#define PWM_DRIVER_CMD_R_REGISTER(_reg_) ((PWM_DRIVER_CMD_R_CODE) | ((PWM_DRIVER_CMD_RW_MASK) & (_reg_)))
 
 // Register write
 #define PWM_DRIVER_CMD_W_CODE            0x40U
-#define PWM_DRIVER_CMD_W_MASK            0x3FU
-#define PWM_DRIVER_CMD_W_REGISTER(_reg_) ((PWM_DRIVER_CMD_W_CODE) | ((PWM_DRIVER_CMD_W_MASK) & (_reg_)))
+#define PWM_DRIVER_CMD_W_REGISTER(_reg_) ((PWM_DRIVER_CMD_W_CODE) | ((PWM_DRIVER_CMD_RW_MASK) & (_reg_)))
+
+#define PWM_DRIVER_CMD_NOP               0xFFU
 
 /** Registers *****************************************************************/
 
-#define PWM_DRIVER_CH0_PULSE 0x00U
-#define PWM_DRIVER_CH1_PULSE 0x01U
-#define PWM_DRIVER_CH2_PULSE 0x02U
-#define PWM_DRIVER_CH3_PULSE 0x03U
-#define PWM_DRIVER_CH4_PULSE 0x04U
-#define PWM_DRIVER_CH5_PULSE 0x05U
-#define PWM_DRIVER_CH6_PULSE 0x06U
-#define PWM_DRIVER_CH7_PULSE 0x07U
+#define PWM_DRIVER_REG_CH0_PULSE 0x00U
+#define PWM_DRIVER_REG_CH1_PULSE 0x01U
+#define PWM_DRIVER_REG_CH2_PULSE 0x02U
+#define PWM_DRIVER_REG_CH3_PULSE 0x03U
+#define PWM_DRIVER_REG_CH4_PULSE 0x04U
+#define PWM_DRIVER_REG_CH5_PULSE 0x05U
+#define PWM_DRIVER_REG_CH6_PULSE 0x06U
+#define PWM_DRIVER_REG_CH7_PULSE 0x07U
+
+#define PWM_DRIVER_REG_NONE      0xFFU
 
 /** CH bits *******************************************************************/
 #define PWM_DRIVER_CH0_Pos (0U)
