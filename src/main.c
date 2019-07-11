@@ -208,11 +208,22 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
             I2Cx.status = I2C_STATUS_BUSY_TX;
 
             if (PWM_driver_cmd == PWM_DRIVER_CMD_R_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
-                I2Cx.txBufferData = (uint8_t *) &PWM_pulses[PWM_driver_reg];
+                union {
+                    uint16_t value;
+                    uint8_t bytes[2];
+                } data;
+
+                data.value = PWM_pulses[PWM_driver_reg];
+                //data.value = TIM1_Handle.Instance->CCR1;
+
+                I2Cx.txBufferData = data.bytes;
                 I2Cx.txBufferSize = 2;
 
-//                I2Cx.txBufferData = (uint8_t *) (&(TIM1->CCR1) + 2);
-//                I2Cx.txBufferSize = 2;
+                //I2Cx.txBufferData = (uint8_t *) &PWM_pulses[PWM_driver_reg];
+                //I2Cx.txBufferSize = 2;
+
+                //I2Cx.txBufferData = (uint8_t *) (&(TIM1_Handle.Instance) + 2);
+                //I2Cx.txBufferSize = 2;
             }
 
             if (HAL_I2C_Slave_Sequential_Transmit_IT(i2c, I2Cx.txBufferData, I2Cx.txBufferSize, I2C_LAST_FRAME) != HAL_OK) {
@@ -228,8 +239,18 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
 
     if (i2c->Instance == I2Cx.handle->Instance) {
         if (PWM_driver_cmd == PWM_DRIVER_CMD_W_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
-            PWM_pulses[PWM_driver_reg] = *((uint16_t *) &I2Cx.rxBufferData[1]);
-            //TIM1->CCR1 = *((uint16_t *) &I2C_rxBufferData[1]);
+            union {
+                uint16_t value;
+                uint8_t bytes[2];
+            } data;
+
+            data.bytes[0] = *(I2Cx.rxBufferData + 1);
+            data.bytes[1] = *(I2Cx.rxBufferData + 2);
+
+            PWM_pulses[PWM_driver_reg] = data.value;
+            //TIM1_Handle.Instance->CCR1 = data.value;
+            //PWM_pulses[PWM_driver_reg] = *((uint16_t *) &I2Cx.rxBufferData[1]);
+            //TIM1_Handle.Instance->CCR1 = PWM_pulses[PWM_driver_reg];
         }
 
         I2Cx.status = I2C_STATUS_COMPLETE;
