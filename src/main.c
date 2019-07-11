@@ -59,7 +59,7 @@ typedef struct {
     uint8_t size;
 } PWM_driver_reg_t;
 
-PWM_driver_reg_t PWM_driver_reg_map[2];
+PWM_driver_reg_t PWM_driver_reg_map[8];
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -83,8 +83,30 @@ int main(void)
     MX_TIM_PWM_Init(TIM1, &TIM1_Handle);
     MX_TIM_PWM_Init(TIM4, &TIM4_Handle);
 
-    PWM_driver_reg_map[0].addr = &(TIM1_Handle.Instance->CCR1);
-    PWM_driver_reg_map[0].size = 2;
+    //TODO config other channels
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH0_PULSE].addr = &(TIM1_Handle.Instance->CCR1);
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH0_PULSE].size = 2;
+
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH1_PULSE].addr = &(TIM1_Handle.Instance->CCR2);
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH1_PULSE].size = 2;
+
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH2_PULSE].addr = &(TIM1_Handle.Instance->CCR3);
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH2_PULSE].size = 2;
+
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH3_PULSE].addr = &(TIM1_Handle.Instance->CCR4);
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH3_PULSE].size = 2;
+
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH4_PULSE].addr = &(TIM4_Handle.Instance->CCR1);
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH4_PULSE].size = 2;
+
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH5_PULSE].addr = &(TIM4_Handle.Instance->CCR2);
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH5_PULSE].size = 2;
+
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH6_PULSE].addr = &(TIM4_Handle.Instance->CCR3);
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH6_PULSE].size = 2;
+
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH7_PULSE].addr = &(TIM4_Handle.Instance->CCR4);
+    PWM_driver_reg_map[PWM_DRIVER_REG_CH7_PULSE].size = 2;
 
     MX_ADDR_Init();
     MX_LED_Init();
