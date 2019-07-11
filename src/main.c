@@ -54,6 +54,13 @@ uint16_t PWM_pulses[] = {0, 0, 0, 0, 0, 0, 0, 0};
 uint8_t PWM_driver_cmd = PWM_DRIVER_CMD_NOP;
 uint8_t PWM_driver_reg = PWM_DRIVER_REG_NONE;
 
+typedef struct {
+    volatile void *addr;
+    uint8_t size;
+} PWM_driver_reg_t;
+
+PWM_driver_reg_t PWM_driver_reg_map[2];
+
 /* Private function prototypes -----------------------------------------------*/
 
 void SystemClock_Config(void);
@@ -74,7 +81,10 @@ int main(void)
     SystemClock_Config();
 
     MX_TIM_PWM_Init(TIM1, &TIM1_Handle);
-    MX_TIM_PWM_Init(TIM1, &TIM4_Handle);
+    MX_TIM_PWM_Init(TIM4, &TIM4_Handle);
+
+    PWM_driver_reg_map[0].addr = &(TIM1_Handle.Instance->CCR1);
+    PWM_driver_reg_map[0].size = 2;
 
     MX_ADDR_Init();
     MX_LED_Init();
@@ -204,7 +214,8 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
             I2Cx.status = I2C_STATUS_BUSY_TX;
 
             if (PWM_driver_cmd == PWM_DRIVER_CMD_R_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
-                uint16_t value = (uint16_t) TIM1_Handle.Instance->CCR1;
+                //uint16_t value = (uint16_t) TIM1_Handle.Instance->CCR1;
+                uint16_t value = (uint16_t) *((__IO uint32_t *) PWM_driver_reg_map[PWM_driver_reg].addr);
 
                 I2Cx.txBufferData[0] = (uint8_t) value;
                 I2Cx.txBufferData[1] = (uint8_t) (value >> 8);
@@ -225,7 +236,8 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
     if (i2c->Instance == I2Cx.handle->Instance) {
         if (PWM_driver_cmd == PWM_DRIVER_CMD_W_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
             uint16_t value = *((uint16_t *) &I2Cx.rxBufferData[1]);
-            TIM1_Handle.Instance->CCR1 = (uint32_t) value;
+            //TIM1_Handle.Instance->CCR1 = (uint32_t) value;
+            *((__IO uint32_t *) PWM_driver_reg_map[PWM_driver_reg].addr) = (uint32_t) value;
         }
 
         I2Cx.status = I2C_STATUS_COMPLETE;
