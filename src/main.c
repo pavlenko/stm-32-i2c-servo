@@ -1,5 +1,6 @@
 /* Includes ------------------------------------------------------------------*/
 
+#include <malloc.h>
 #include <string.h>
 
 #include "main.h"
@@ -53,9 +54,6 @@ uint16_t PWM_pulses[] = {0, 0, 0, 0, 0, 0, 0, 0};
 uint8_t PWM_driver_cmd = PWM_DRIVER_CMD_NOP;
 uint8_t PWM_driver_reg = PWM_DRIVER_REG_NONE;
 
-uint8_t I2C_rxBufferData[I2C_RX_BUFFER_MAX];
-uint8_t I2C_rxBufferSize;
-
 /* Private function prototypes -----------------------------------------------*/
 
 void SystemClock_Config(void);
@@ -84,6 +82,9 @@ int main(void)
     address = MX_ADDR_Read();
     address = address << 1u;
 
+    I2Cx.rxBufferData = (uint8_t *) malloc(4);
+    I2Cx.rxBufferSize = 4;
+
     MX_I2C_Init(I2C2, I2Cx.handle, address);
 
     uint32_t tick = HAL_GetTick();
@@ -103,12 +104,8 @@ int main(void)
         }
 
         if (I2Cx.status == I2C_STATUS_COMPLETE) {
-            I2C_rxBufferSize = 0;
-
             I2Cx.txBufferData = NULL;
             I2Cx.txBufferSize = 0;
-
-            I2Cx.rxBufferData = NULL;
             I2Cx.rxBufferSize = 0;
 
             I2Cx.status = I2C_STATUS_READY;
@@ -202,11 +199,11 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
         if (direction == I2C_DIRECTION_TRANSMIT) {
             I2Cx.status = I2C_STATUS_BUSY_RX;
 
-            if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, &I2C_rxBufferData[I2C_rxBufferSize], 1, I2C_FIRST_FRAME) != HAL_OK) {
+            if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, &I2Cx.rxBufferData[I2Cx.rxBufferSize], 1, I2C_FIRST_FRAME) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
             }
 
-            I2C_rxBufferSize++;
+            I2Cx.rxBufferSize++;
         } else {
             I2Cx.status = I2C_STATUS_BUSY_TX;
 
@@ -231,7 +228,8 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
 
     if (i2c->Instance == I2Cx.handle->Instance) {
         if (PWM_driver_cmd == PWM_DRIVER_CMD_W_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
-            PWM_pulses[PWM_driver_reg] = 0xFF;
+            PWM_pulses[PWM_driver_reg] = *((uint16_t *) &I2Cx.rxBufferData[1]);
+            //TIM1->CCR1 = *((uint16_t *) &I2C_rxBufferData[1]);
         }
 
         I2Cx.status = I2C_STATUS_COMPLETE;
@@ -243,44 +241,24 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
     MX_LED_ON(50);
 
     if (i2c->Instance == I2Cx.handle->Instance) {
-        if (I2C_rxBufferSize == 1) {
-            if (PWM_DRIVER_CMD_R_CODE == (I2C_rxBufferData[0] & ~PWM_DRIVER_CMD_RW_MASK)) {
+        if (I2Cx.rxBufferSize == 1) {
+            if (PWM_DRIVER_CMD_R_CODE == (I2Cx.rxBufferData[0] & ~PWM_DRIVER_CMD_RW_MASK)) {
                 PWM_driver_cmd = PWM_DRIVER_CMD_R_CODE;
-                PWM_driver_reg = (I2C_rxBufferData[0] & PWM_DRIVER_CMD_RW_MASK);
+                PWM_driver_reg = (I2Cx.rxBufferData[0] & PWM_DRIVER_CMD_RW_MASK);
                 return;
             }
 
-            if (PWM_DRIVER_CMD_W_CODE == (I2C_rxBufferData[0] & ~PWM_DRIVER_CMD_RW_MASK)) {
+            if (PWM_DRIVER_CMD_W_CODE == (I2Cx.rxBufferData[0] & ~PWM_DRIVER_CMD_RW_MASK)) {
                 PWM_driver_cmd = PWM_DRIVER_CMD_W_CODE;
-                PWM_driver_reg = (I2C_rxBufferData[0] & PWM_DRIVER_CMD_RW_MASK);
+                PWM_driver_reg = (I2Cx.rxBufferData[0] & PWM_DRIVER_CMD_RW_MASK);
             }
         }
 
-//        if (PWM_DRIVER_CMD_W_CODE == (I2C_rxBufferData[0] & ~PWM_DRIVER_CMD_RW_MASK)) {
-//            //TODO test
-//
-//            if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, (uint8_t *) &PWM_pulses[(I2C_rxBufferData[0] & PWM_DRIVER_CMD_RW_MASK)], 2, I2C_FIRST_FRAME) != HAL_OK) {
-//                Error_Handler(__FILE__, __LINE__);
-//            }
-//
-////            if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, &I2C_rxBufferData[I2C_rxBufferSize], 2, I2C_FIRST_FRAME) != HAL_OK) {
-////                Error_Handler(__FILE__, __LINE__);
-////            }
-//
-//            I2C_rxBufferSize += 2;
-//        }
+        if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, &I2Cx.rxBufferData[I2Cx.rxBufferSize], 1, I2C_FIRST_FRAME) != HAL_OK) {
+            Error_Handler(__FILE__, __LINE__);
+        }
 
-//        if (I2C_rxBufferData[0] == 0x00) {
-//            I2C_responseIndex = 0;
-//        } else if (I2C_rxBufferData[0] == 0x01) {
-//            I2C_responseIndex = 1;
-//        } else {
-            if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, &I2C_rxBufferData[I2C_rxBufferSize], 1, I2C_FIRST_FRAME) != HAL_OK) {
-                Error_Handler(__FILE__, __LINE__);
-            }
-
-            I2C_rxBufferSize++;
-//        }
+        I2Cx.rxBufferSize++;
     }
 }
 
