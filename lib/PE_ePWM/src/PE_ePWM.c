@@ -8,6 +8,20 @@
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
+/**
+ * Enable/disable PWM generation for channel group
+ *
+ * If enable timer pre-scale is configured by formula:
+ * pre-scale = (F_CPU / (min(PULSE_RES, 65535) * PULSE_CLK)) - 1
+ *
+ * Where:
+ * PULSE_RES - value of PE_ePWM_REG_PULSE_RES register, by default == 65535 TODO default value
+ * PULSE_CLK - value of PE_ePWM_REG_PULSE_CLK register, by default == 10000
+ *
+ * @param pwm
+ * @param value
+ * @param mask
+ */
 void PE_ePWM_setEnabledPWM(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, PE_ePWM_EN_PWM_t mask)
 {
     if (value == PE_ePWM_BIT_SET) {
@@ -17,6 +31,13 @@ void PE_ePWM_setEnabledPWM(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, PE_ePWM_EN_PWM_t
     }
 }
 
+/**
+ * Enable/disable DC-DC converter for channel group (can be unused)
+ *
+ * @param pwm
+ * @param value
+ * @param mask
+ */
 void PE_ePWM_setEnabledPWR(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, PE_ePWM_EN_PWR_t mask)
 {
     if (value == PE_ePWM_BIT_SET) {
@@ -26,6 +47,13 @@ void PE_ePWM_setEnabledPWR(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, PE_ePWM_EN_PWR_t
     }
 }
 
+/**
+ * Enable/disable PWM output for channel(s)
+ *
+ * @param pwm
+ * @param value
+ * @param mask
+ */
 void PE_ePWM_setPulseEN(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, uint8_t mask)
 {
     if (value == PE_ePWM_BIT_SET) {
@@ -35,21 +63,47 @@ void PE_ePWM_setPulseEN(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, uint8_t mask)
     }
 }
 
+/**
+ * Set PE_ePWM_REG_PULSE_CLK register value
+ *
+ * @param pwm
+ * @param value
+ */
 void PE_ePWM_setPulseClock(PE_ePWM_t *pwm, uint16_t value)
 {
     pwm->send(PE_ePWM_CMD_W_REGISTER + PE_ePWM_REG_PULSE_CLK, (uint8_t *) &value, 2);
 }
 
+/**
+ * Set PE_ePWM_REG_PULSE_RES register value
+ *
+ * @param pwm
+ * @param value
+ */
 void PE_ePWM_setPulseReset(PE_ePWM_t *pwm, uint16_t value)
 {
     pwm->send(PE_ePWM_CMD_W_REGISTER + PE_ePWM_REG_PULSE_RES, (uint8_t *) &value, 2);
 }
 
+/**
+ * Set specific channel value as pulse
+ *
+ * @param pwm
+ * @param channel
+ * @param value
+ */
 void PE_ePWM_setPulse(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value)
 {
     pwm->send(PE_ePWM_CMD_SET_PULSE + channel, (uint8_t *) &value, 2);
 }
 
+/**
+ * Set specific channel value as degree
+ *
+ * @param pwm
+ * @param channel
+ * @param value
+ */
 void PE_ePWM_setAngle(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value)
 {
     pwm->send(PE_ePWM_CMD_SET_ANGLE + channel, (uint8_t *) &value, 2);
