@@ -25,21 +25,21 @@ void PE_ePWM_clrRegister(PE_ePWM_t *pwm, uint8_t addr, uint8_t byte)
     pwm->send(PE_ePWM_CMD_CLR_REGISTER + addr, &byte, 1);
 }
 
-void PE_ePWM_setEnabledPWM(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, uint8_t mask)
+void PE_ePWM_setEnabledPWM(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, PE_ePWM_EN_PWM_t mask)
 {
     if (value == PE_ePWM_BIT_SET) {
-        pwm->send(PE_ePWM_CMD_SET_REGISTER + PE_ePWM_REG_CONFIG, &mask, 1);
+        pwm->send(PE_ePWM_CMD_SET_REGISTER + PE_ePWM_REG_CONFIG, (uint8_t *) &mask, 1);
     } else {
-        pwm->send(PE_ePWM_CMD_CLR_REGISTER + PE_ePWM_REG_CONFIG, &mask, 1);
+        pwm->send(PE_ePWM_CMD_CLR_REGISTER + PE_ePWM_REG_CONFIG, (uint8_t *) &mask, 1);
     }
 }
 
-void PE_ePWM_setEnabledPWR(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, uint8_t mask)
+void PE_ePWM_setEnabledPWR(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, PE_ePWM_EN_PWR_t mask)
 {
     if (value == PE_ePWM_BIT_SET) {
-        pwm->send(PE_ePWM_CMD_SET_REGISTER + PE_ePWM_REG_CONFIG, &mask, 1);
+        pwm->send(PE_ePWM_CMD_SET_REGISTER + PE_ePWM_REG_CONFIG, (uint8_t *) &mask, 1);
     } else {
-        pwm->send(PE_ePWM_CMD_CLR_REGISTER + PE_ePWM_REG_CONFIG, &mask, 1);
+        pwm->send(PE_ePWM_CMD_CLR_REGISTER + PE_ePWM_REG_CONFIG, (uint8_t *) &mask, 1);
     }
 }
 

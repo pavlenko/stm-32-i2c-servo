@@ -94,7 +94,7 @@ extern "C" {
 #define PE_ePWM_CONFIG_EN_PWM0     PE_ePWM_CONFIG_EN_PWM0_Msk
 
 // Enable PWM generation for CH4-CH7
-#define PE_ePWM_CONFIG_EN_PWM1_Pos (0x04U)
+#define PE_ePWM_CONFIG_EN_PWM1_Pos (0x05U)
 #define PE_ePWM_CONFIG_EN_PWM1_Msk (0x01U << PE_ePWM_CONFIG_EN_PWM1_Pos)
 #define PE_ePWM_CONFIG_EN_PWM1     PE_ePWM_CONFIG_EN_PWM1_Msk
 
@@ -147,6 +147,20 @@ typedef enum {
 } PE_ePWM_BIT_t;
 
 typedef enum {
+    PE_ePWM_EN_PWR_NONE    = 0x00U,
+    PE_ePWM_EN_PWR_GROUP0  = PE_ePWM_CONFIG_EN_PWR0,
+    PE_ePWM_EN_PWR_GROUP1  = PE_ePWM_CONFIG_EN_PWR1,
+    PE_ePWM_EN_PWR_ALL     = PE_ePWM_CONFIG_EN_PWR1|PE_ePWM_CONFIG_EN_PWR0,
+} PE_ePWM_EN_PWR_t;
+
+typedef enum {
+    PE_ePWM_EN_PWM_NONE   = 0x00U,
+    PE_ePWM_EN_PWM_GROUP0 = PE_ePWM_CONFIG_EN_PWM0,
+    PE_ePWM_EN_PWM_GROUP1 = PE_ePWM_CONFIG_EN_PWM1,
+    PE_ePWM_EN_PWM_ALL    = PE_ePWM_CONFIG_EN_PWM1|PE_ePWM_CONFIG_EN_PWM0,
+} PE_ePWM_EN_PWM_t;
+
+typedef enum {
     PE_ePWM_CHANNEL_0 = 0x00U,
     PE_ePWM_CHANNEL_1 = 0x01U,
     PE_ePWM_CHANNEL_2 = 0x02U,
@@ -170,9 +184,8 @@ uint8_t PE_ePWM_getRegister(PE_ePWM_t *pwm, uint8_t addr);
 void PE_ePWM_setRegister(PE_ePWM_t *pwm, uint8_t addr, uint8_t byte);
 void PE_ePWM_clrRegister(PE_ePWM_t *pwm, uint8_t addr, uint8_t byte);
 
-//TODO create enum masks
-void PE_ePWM_setEnabledPWM(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, uint8_t mask);
-void PE_ePWM_setEnabledPWR(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, uint8_t mask);
+void PE_ePWM_setEnabledPWM(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, PE_ePWM_EN_PWM_t mask);
+void PE_ePWM_setEnabledPWR(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, PE_ePWM_EN_PWR_t mask);
 
 void PE_ePWM_setPulseEN(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, uint8_t mask);
 void PE_ePWM_setPulseClock(PE_ePWM_t *pwm, uint16_t value);
