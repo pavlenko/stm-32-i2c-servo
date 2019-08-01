@@ -7,7 +7,9 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-/* Exported types ------------------------------------------------------------*/
+
+#include <stdint.h>
+
 /* Exported constants --------------------------------------------------------*/
 
 /** Instructions **************************************************************/
@@ -132,9 +134,39 @@ extern "C" {
 
 #define PE_ePWM_CH_ALL  0xFFU
 
+/* Exported types ------------------------------------------------------------*/
+
+typedef enum {
+    PE_ePWM_RESULT_OK    = 0x00U,
+    PE_ePWM_RESULT_ERROR = 0x01U,
+} PE_ePWM_RESULT_t;
+
+typedef enum {
+    PE_ePWM_CHANNEL_0 = 0x00U,
+    PE_ePWM_CHANNEL_1 = 0x01U,
+    PE_ePWM_CHANNEL_2 = 0x02U,
+    PE_ePWM_CHANNEL_3 = 0x03U,
+    PE_ePWM_CHANNEL_4 = 0x04U,
+    PE_ePWM_CHANNEL_5 = 0x05U,
+    PE_ePWM_CHANNEL_6 = 0x06U,
+    PE_ePWM_CHANNEL_7 = 0x07U,
+} PE_ePWM_CHANNEL_t;
+
+typedef struct {
+    void (*read) (uint8_t addr, uint8_t *data, uint8_t size);
+    void (*send) (uint8_t addr, uint8_t *data, uint8_t size);
+} PE_ePWM_t;
+
 /* Exported function prototypes --------------------------------------------- */
 /* Exported variables --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
+
+uint8_t PE_ePWM_getRegister(PE_ePWM_t *pwm, uint8_t addr);
+void PE_ePWM_setRegister(PE_ePWM_t *pwm, uint8_t addr, uint8_t byte);
+void PE_ePWM_clrRegister(PE_ePWM_t *pwm, uint8_t addr, uint8_t byte);
+
+void PE_ePWM_setPulse(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value);
+void PE_ePWM_setAngle(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value);
 
 #ifdef __cplusplus
 }
