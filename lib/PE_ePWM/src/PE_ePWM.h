@@ -12,18 +12,27 @@ extern "C" {
 
 /** Instructions **************************************************************/
 
-#define PE_ePWM_CMD_R_REGISTER 0x00U
-#define PE_ePWM_CMD_W_REGISTER 0x40U
-#define PE_ePWM_CMD_NOP        0xFFU
+#define PE_ePWM_CMD_GET_REGISTER 0x00U // Get register
+#define PE_ePWM_CMD_SET_REGISTER 0x40U // Set register bits to 1
+#define PE_ePWM_CMD_CLR_REGISTER 0x80U // Set register bits to 0
+#define PE_ePWM_CMD_NOP          0xFFU
 
 /** Registers *****************************************************************/
 
-#define PE_ePWM_REG_CONFIG_GET   (0x00U) // <-- R: Get driver config bits
-#define PE_ePWM_REG_CONFIG_SET   (0x01U) // <-- W: Set driver config bits
-#define PE_ePWM_REG_CONFIG_CLR   (0x02U) // <-- W: Clr driver config bits
-#define PE_ePWM_REG_PULSE_EN_GET (0x03U) // <-- R: Get pulse enabled state
-#define PE_ePWM_REG_PULSE_EN_SET (0x04U) // <-- W: Set pulse enabled
-#define PE_ePWM_REG_PULSE_EN_CLR (0x05U) // <-- W: Set pulse disabled
+#define PE_ePWM_REG_CONFIG    0x00U
+#define PE_ePWM_REG_PULSE_EN  0x01U
+
+//TODO maybe add en CLK to config for allow calculate after config
+//TODO calculate: pre-scale = round(Fclk / (min(PULSE_RES, PULSE_MAX) * HZ)) - 1
+#define PE_ePWM_REG_PULSE_CLK 0x01U // Configure pulse clock HZ
+#define PE_ePWM_REG_PULSE_RES 0x01U // Configure pulse reset value
+
+#define PE_ePWM_REG_PULSE_CH0 0x10U
+#define PE_ePWM_REG_PULSE_CH7 0x17U
+#define PE_ePWM_REG_MIN_CH0   0x18U
+#define PE_ePWM_REG_MIN_CH7   0x1AU
+#define PE_ePWM_REG_MAX_CH0   0x20U
+#define PE_ePWM_REG_MAX_CH7   0x27U
 //TODO config driver mode: pwm/servo
 //TODO config power enable/disable for channel group
 //TODO value registers
