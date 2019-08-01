@@ -14,13 +14,14 @@ extern "C" {
 
 /** Instructions **************************************************************/
 
-#define PE_ePWM_CMD_GET_REGISTER 0x00U // Get register
-#define PE_ePWM_CMD_SET_REGISTER 0x08U // Set register bits to 1
-#define PE_ePWM_CMD_CLR_REGISTER 0x10U // Set register bits to 0
+#define PE_ePWM_CMD_R_REGISTER        0x00U // Get register
+#define PE_ePWM_CMD_W_REGISTER        0x08U // Set register (overwrite value)
+#define PE_ePWM_CMD_SET_REGISTER_BITS 0x10U // Set register bits to 1
+#define PE_ePWM_CMD_CLR_REGISTER_BITS 0x18U // Set register bits to 0
 //TODO create separate commands for set values and calibration
-#define PE_ePWM_CMD_SET_PULSE    0x18U // Set channel pulse width
-#define PE_ePWM_CMD_SET_ANGLE    0x20U // Set channel degree, only for servo mode
-#define PE_ePWM_CMD_NOP          0xFFU
+#define PE_ePWM_CMD_SET_PULSE         0x20U // Set channel pulse width
+#define PE_ePWM_CMD_SET_ANGLE         0x28U // Set channel degree, only for servo mode
+#define PE_ePWM_CMD_NOP               0xFFU
 
 /** Registers *****************************************************************/
 
@@ -179,10 +180,6 @@ typedef struct {
 /* Exported function prototypes --------------------------------------------- */
 /* Exported variables --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-
-uint8_t PE_ePWM_getRegister(PE_ePWM_t *pwm, uint8_t addr);
-void PE_ePWM_setRegister(PE_ePWM_t *pwm, uint8_t addr, uint8_t byte);
-void PE_ePWM_clrRegister(PE_ePWM_t *pwm, uint8_t addr, uint8_t byte);
 
 void PE_ePWM_setEnabledPWM(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, PE_ePWM_EN_PWM_t mask);
 void PE_ePWM_setEnabledPWR(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, PE_ePWM_EN_PWR_t mask);
