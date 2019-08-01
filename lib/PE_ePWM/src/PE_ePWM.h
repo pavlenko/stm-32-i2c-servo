@@ -142,6 +142,11 @@ typedef enum {
 } PE_ePWM_RESULT_t;
 
 typedef enum {
+    PE_ePWM_BIT_CLR = 0x00U,
+    PE_ePWM_BIT_SET = 0x01U,
+} PE_ePWM_BIT_t;
+
+typedef enum {
     PE_ePWM_CHANNEL_0 = 0x00U,
     PE_ePWM_CHANNEL_1 = 0x01U,
     PE_ePWM_CHANNEL_2 = 0x02U,
@@ -164,6 +169,14 @@ typedef struct {
 uint8_t PE_ePWM_getRegister(PE_ePWM_t *pwm, uint8_t addr);
 void PE_ePWM_setRegister(PE_ePWM_t *pwm, uint8_t addr, uint8_t byte);
 void PE_ePWM_clrRegister(PE_ePWM_t *pwm, uint8_t addr, uint8_t byte);
+
+//TODO create enum masks
+void PE_ePWM_setEnabledPWM(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, uint8_t mask);
+void PE_ePWM_setEnabledPWR(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, uint8_t mask);
+
+void PE_ePWM_setPulseEN(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, uint8_t mask);
+void PE_ePWM_setPulseClock(PE_ePWM_t *pwm, uint16_t value);
+void PE_ePWM_setPulseReset(PE_ePWM_t *pwm, uint16_t value);
 
 void PE_ePWM_setPulse(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value);
 void PE_ePWM_setAngle(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value);
