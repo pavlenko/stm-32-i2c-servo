@@ -201,6 +201,39 @@ void HAL_MspInit(void)
 void HAL_MspDeInit(void)
 {}
 
+/**
+ * @param i2c
+ */
+void MX_I2C_onRequest(I2C_t *i2c)
+{
+    (void) i2c;
+}
+
+/**
+ * @param i2c
+ */
+void MX_I2C_onReceive(I2C_t *i2c)
+{
+    (void) i2c;
+}
+
+/**
+ * @param i2c
+ */
+void MX_I2C_onSuccess(I2C_t *i2c)
+{
+    (void) i2c;
+}
+
+/**
+ * @param i2c
+ */
+void MX_I2C_onFailure(I2C_t *i2c)
+{
+    MX_LED_ON(50);
+    (void) i2c;
+}
+
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t address)
 {
     MX_LED_ON(50);
