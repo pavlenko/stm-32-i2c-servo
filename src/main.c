@@ -17,23 +17,6 @@ typedef union {
     uint8_t  bytes[2];
 } PWM_pulse_t;
 
-enum {
-    I2C_STATUS_READY    = 0,
-    I2C_STATUS_LISTEN   = 1,
-    I2C_STATUS_BUSY_RX  = 2,
-    I2C_STATUS_BUSY_TX  = 3,
-    I2C_STATUS_COMPLETE = 4,
-} I2C_status_t;
-
-typedef struct {
-    I2C_HandleTypeDef *handle;
-    uint8_t status;
-    uint8_t rxBufferData[5];
-    uint8_t rxBufferSize;
-    uint8_t txBufferData[4];//TODO pre-alloc
-    uint8_t txBufferSize;
-} I2C_t;
-
 /* Private define ------------------------------------------------------------*/
 
 #define I2C_RX_BUFFER_MAX 32

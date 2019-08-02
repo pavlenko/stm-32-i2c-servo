@@ -18,6 +18,8 @@ extern "C" {
 
 void MX_I2C_Init(I2C_TypeDef *i2c, I2C_HandleTypeDef *handle, uint16_t address);
 
+void MX_I2C_dispatch(I2C_t *i2c);
+
 #ifdef __cplusplus
 }
 #endif

@@ -26,6 +26,28 @@ void MX_I2C_Init(I2C_TypeDef *i2c, I2C_HandleTypeDef *handle, uint16_t address)
     }
 }
 
+void MX_I2C_dispatch(I2C_t *i2c)
+{
+    if (i2c->status == I2C_STATUS_READY) {
+        if (HAL_I2C_EnableListen_IT(i2c->handle) != HAL_OK) {
+            Error_Handler(__FILE__, __LINE__);
+        }
+
+        i2c->status = I2C_STATUS_LISTEN;
+    }
+
+    if (i2c->status == I2C_STATUS_COMPLETE) {
+        i2c->txBufferSize = 0;
+        i2c->rxBufferSize = 0;
+
+        //TODO callback here
+        //PWM_driver_cmd = PWM_DRIVER_CMD_NOP;
+        //PWM_driver_reg = PWM_DRIVER_REG_NONE;
+
+        i2c->status = I2C_STATUS_READY;
+    }
+}
+
 void HAL_I2C_MspInit(I2C_HandleTypeDef* i2c)
 {
     GPIO_InitTypeDef GPIO_InitStruct;
