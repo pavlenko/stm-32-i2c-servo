@@ -11,25 +11,6 @@ extern "C" {
 #include <stm32f1xx_hal.h>
 
 /* Exported types ------------------------------------------------------------*/
-
-//TODO maybe move this type to I2C file
-enum {
-    I2C_STATUS_READY    = 0,
-    I2C_STATUS_LISTEN   = 1,
-    I2C_STATUS_BUSY_RX  = 2,
-    I2C_STATUS_BUSY_TX  = 3,
-    I2C_STATUS_COMPLETE = 4,
-} I2C_status_t;
-
-typedef struct {
-    I2C_HandleTypeDef *handle;
-    uint8_t status;
-    uint8_t rxBufferData[5];
-    uint8_t rxBufferSize;
-    uint8_t txBufferData[4];
-    uint8_t txBufferSize;
-} I2C_t;
-
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
