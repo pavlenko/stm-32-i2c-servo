@@ -218,6 +218,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
         } else {
             I2Cx.status = I2C_STATUS_BUSY_TX;
 
+            //TODO onRequest(i2c)
             if (PWM_driver_cmd == PWM_DRIVER_CMD_R_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
                 //uint16_t value = (uint16_t) TIM1_Handle.Instance->CCR1;
                 uint16_t value = (uint16_t) *((__IO uint32_t *) PWM_driver_reg_map[PWM_driver_reg].addr);
@@ -239,6 +240,7 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
     MX_LED_ON(50);
 
     if (i2c->Instance == I2Cx.handle->Instance) {
+        //TODO onReceiveByte ???
         if (I2Cx.rxBufferSize == 1) {
             if (PWM_DRIVER_CMD_R_CODE == (I2Cx.rxBufferData[0] & ~PWM_DRIVER_CMD_RW_MASK)) {
                 PWM_driver_cmd = PWM_DRIVER_CMD_R_CODE;
@@ -271,6 +273,7 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
     MX_LED_ON(50);
 
     if (i2c->Instance == I2Cx.handle->Instance) {
+        //TODO onReceiveData if prev status == busy RX ???
         if (PWM_driver_cmd == PWM_DRIVER_CMD_W_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
             uint16_t value = *((uint16_t *) &I2Cx.rxBufferData[1]);
             //TIM1_Handle.Instance->CCR1 = (uint32_t) value;

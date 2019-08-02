@@ -40,12 +40,51 @@ void MX_I2C_dispatch(I2C_t *i2c)
         i2c->txBufferSize = 0;
         i2c->rxBufferSize = 0;
 
-        //TODO callback here
-        //PWM_driver_cmd = PWM_DRIVER_CMD_NOP;
-        //PWM_driver_reg = PWM_DRIVER_REG_NONE;
+        MX_I2C_onSuccess(i2c);
+        MX_I2C_onFailure(i2c);//TODO split complete status
 
         i2c->status = I2C_STATUS_READY;
     }
+}
+
+/**
+ * Called in I2C slave TX mode after address received
+ *
+ * @param i2c
+ */
+__attribute__((weak)) void MX_I2C_onRequest(I2C_t *i2c)
+{
+    (void) i2c;
+}
+
+/**
+ * Called in I2C slave RX mode after address and data received
+ *
+ * @param i2c
+ */
+__attribute__((weak)) void MX_I2C_onReceive(I2C_t *i2c)
+{
+    (void) i2c;
+}
+
+/**
+ * Called after RX/TX transaction completed successfully
+ *
+ * @param i2c
+ */
+__attribute__((weak)) void MX_I2C_onSuccess(I2C_t *i2c)
+{
+    (void) i2c;
+}
+
+/**
+ * Called in I2C error callback
+ *
+ * @param i2c
+ */
+__attribute__((weak)) void MX_I2C_onFailure(I2C_t *i2c)
+{
+    (void) i2c;
 }
 
 void HAL_I2C_MspInit(I2C_HandleTypeDef* i2c)

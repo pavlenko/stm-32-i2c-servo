@@ -12,6 +12,7 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 
+//TODO maybe move this type to I2C file
 enum {
     I2C_STATUS_READY    = 0,
     I2C_STATUS_LISTEN   = 1,
