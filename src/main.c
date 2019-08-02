@@ -107,23 +107,7 @@ int main(void)
             MX_LED_ON(50);
         }
 
-        if (I2Cx.status == I2C_STATUS_READY) {
-            if (HAL_I2C_EnableListen_IT(I2Cx.handle) != HAL_OK) {
-                Error_Handler(__FILE__, __LINE__);
-            }
-
-            I2Cx.status = I2C_STATUS_LISTEN;
-        }
-
-        if (I2Cx.status == I2C_STATUS_COMPLETE) {
-            I2Cx.txBufferSize = 0;
-            I2Cx.rxBufferSize = 0;
-
-            I2Cx.status = I2C_STATUS_READY;
-
-            PWM_driver_cmd = PWM_DRIVER_CMD_NOP;
-            PWM_driver_reg = PWM_DRIVER_REG_NONE;
-        }
+        MX_I2C_dispatch(&I2Cx);
 
         MX_LED_OFF(0);
     }
@@ -222,6 +206,11 @@ void MX_I2C_onReceive(I2C_t *i2c)
  */
 void MX_I2C_onSuccess(I2C_t *i2c)
 {
+    MX_LED_ON(50);
+
+    PWM_driver_cmd = PWM_DRIVER_CMD_NOP;
+    PWM_driver_reg = PWM_DRIVER_REG_NONE;
+
     (void) i2c;
 }
 
@@ -231,6 +220,10 @@ void MX_I2C_onSuccess(I2C_t *i2c)
 void MX_I2C_onFailure(I2C_t *i2c)
 {
     MX_LED_ON(50);
+
+    PWM_driver_cmd = PWM_DRIVER_CMD_NOP;
+    PWM_driver_reg = PWM_DRIVER_REG_NONE;
+
     (void) i2c;
 }
 
@@ -313,7 +306,7 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
             *((__IO uint32_t *) PWM_driver_reg_map[PWM_driver_reg].addr) = (uint32_t) value;
         }
 
-        I2Cx.status = I2C_STATUS_COMPLETE;
+        I2Cx.status = I2C_STATUS_SUCCESS;
     }
 }
 
@@ -332,7 +325,7 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *i2c)
             Error_Handler(__FILE__, __LINE__);
         }
 
-        I2Cx.status = I2C_STATUS_COMPLETE;
+        I2Cx.status = I2C_STATUS_FAILURE;
     }
 }
 

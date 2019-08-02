@@ -13,11 +13,12 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 
 typedef enum {
-    I2C_STATUS_READY    = 0,
-    I2C_STATUS_LISTEN   = 1,
-    I2C_STATUS_BUSY_RX  = 2,
-    I2C_STATUS_BUSY_TX  = 3,
-    I2C_STATUS_COMPLETE = 4,
+    I2C_STATUS_READY    = 0x00U,
+    I2C_STATUS_LISTEN   = 0x01U,
+    I2C_STATUS_BUSY_RX  = 0x02U,
+    I2C_STATUS_BUSY_TX  = 0x03U,
+    I2C_STATUS_SUCCESS = 0x04U,
+    I2C_STATUS_FAILURE  = 0x05U,
 } I2C_status_t;
 
 typedef struct {

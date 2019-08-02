@@ -36,12 +36,17 @@ void MX_I2C_dispatch(I2C_t *i2c)
         i2c->status = I2C_STATUS_LISTEN;
     }
 
-    if (i2c->status == I2C_STATUS_COMPLETE) {
+    if (i2c->status == I2C_STATUS_SUCCESS) {
+        MX_I2C_onSuccess(i2c);
+    }
+
+    if (i2c->status == I2C_STATUS_FAILURE) {
+        MX_I2C_onFailure(i2c);
+    }
+
+    if (i2c->status == I2C_STATUS_SUCCESS || i2c->status == I2C_STATUS_FAILURE) {
         i2c->txBufferSize = 0;
         i2c->rxBufferSize = 0;
-
-        MX_I2C_onSuccess(i2c);
-        MX_I2C_onFailure(i2c);//TODO split complete status
 
         i2c->status = I2C_STATUS_READY;
     }
