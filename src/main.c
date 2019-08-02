@@ -190,7 +190,16 @@ void HAL_MspDeInit(void)
  */
 void MX_I2C_onRequest(I2C_t *i2c)
 {
-    (void) i2c;
+    MX_LED_ON(50);
+
+    if (PWM_driver_cmd == PWM_DRIVER_CMD_R_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
+        //uint16_t value = (uint16_t) TIM1_Handle.Instance->CCR1;
+        uint16_t value = (uint16_t) *((__IO uint32_t *) PWM_driver_reg_map[PWM_driver_reg].addr);
+
+        i2c->txBufferData[0] = (uint8_t) value;
+        i2c->txBufferData[1] = (uint8_t) (value >> 8U);
+        i2c->txBufferSize    = 2;
+    }
 }
 
 /**
@@ -227,7 +236,7 @@ void MX_I2C_onFailure(I2C_t *i2c)
     (void) i2c;
 }
 
-void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t address)
+__used void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t address)
 {
     MX_LED_ON(50);
 
@@ -244,15 +253,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
         } else {
             I2Cx.status = I2C_STATUS_BUSY_TX;
 
-            //TODO onRequest(i2c)
-            if (PWM_driver_cmd == PWM_DRIVER_CMD_R_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
-                //uint16_t value = (uint16_t) TIM1_Handle.Instance->CCR1;
-                uint16_t value = (uint16_t) *((__IO uint32_t *) PWM_driver_reg_map[PWM_driver_reg].addr);
-
-                I2Cx.txBufferData[0] = (uint8_t) value;
-                I2Cx.txBufferData[1] = (uint8_t) (value >> 8);
-                I2Cx.txBufferSize    = 2;
-            }
+            MX_I2C_onRequest(&I2Cx);
 
             if (HAL_I2C_Slave_Sequential_Transmit_IT(i2c, &I2Cx.txBufferData[0], I2Cx.txBufferSize, I2C_LAST_FRAME) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
@@ -261,7 +262,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint16_t ad
     }
 }
 
-void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
+__used void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
 {
     MX_LED_ON(50);
 
@@ -288,13 +289,13 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
     }
 }
 
-void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
+__used void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
     MX_LED_ON(50);
     UNUSED(hi2c);
 }
 
-void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
+__used void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
 {
     MX_LED_ON(50);
 
@@ -310,13 +311,13 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
     }
 }
 
-void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef *hi2c)
+__used void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef *hi2c)
 {
     MX_LED_ON(50);
     UNUSED(hi2c);
 }
 
-void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *i2c)
+__used void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *i2c)
 {
     MX_LED_ON(50);
 
