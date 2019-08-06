@@ -18,7 +18,6 @@ extern "C" {
 #define PE_ePWM_CMD_W_REGISTER        0x08U // Set register (overwrite value)
 #define PE_ePWM_CMD_SET_REGISTER_BITS 0x10U // Set register bits to 1
 #define PE_ePWM_CMD_CLR_REGISTER_BITS 0x18U // Set register bits to 0
-//TODO create separate commands for set values and calibration
 #define PE_ePWM_CMD_SET_PULSE         0x20U // Set channel pulse width
 #define PE_ePWM_CMD_SET_ANGLE         0x28U // Set channel degree, only for servo mode
 #define PE_ePWM_CMD_NOP               0xFFU
@@ -27,11 +26,8 @@ extern "C" {
 
 #define PE_ePWM_REG_CONFIG    0x00U
 #define PE_ePWM_REG_PULSE_EN  0x01U
-
-//TODO maybe add en CLK to config for allow calculate after config
-//TODO calculate: pre-scale = round(Fclk / (min(PULSE_RES, PULSE_MAX) * HZ)) - 1
-#define PE_ePWM_REG_PULSE_CLK 0x01U // Configure pulse clock HZ
-#define PE_ePWM_REG_PULSE_RES 0x01U // Configure pulse reset value
+#define PE_ePWM_REG_PULSE_CLK 0x02U // Configure pulse clock HZ
+#define PE_ePWM_REG_PULSE_RES 0x03U // Configure pulse reset value
 
 #define PE_ePWM_REG_RESERVED0 0x04U
 #define PE_ePWM_REG_RESERVED1 0x05U
