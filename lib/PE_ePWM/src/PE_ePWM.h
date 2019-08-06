@@ -34,6 +34,8 @@ extern "C" {
 #define PE_ePWM_REG_RESERVED2 0x06U
 #define PE_ePWM_REG_RESERVED3 0x07U
 
+#define PE_ePWM_REG_MASK      0x07U
+
 /** Values ********************************************************************/
 
 #define PE_ePWM_REG_PULSE_CH0 0x08U
@@ -169,6 +171,8 @@ typedef enum {
 } PE_ePWM_CHANNEL_t;
 
 typedef struct {
+    uint8_t cmd;
+    uint8_t reg;
     void (*read) (uint8_t addr, uint8_t *data, uint8_t size);
     void (*send) (uint8_t addr, uint8_t *data, uint8_t size);
 } PE_ePWM_t;

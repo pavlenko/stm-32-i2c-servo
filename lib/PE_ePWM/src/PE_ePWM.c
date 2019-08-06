@@ -108,3 +108,27 @@ void PE_ePWM_setAngle(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value)
 {
     pwm->send(PE_ePWM_CMD_SET_ANGLE + channel, (uint8_t *) &value, 2);
 }
+
+//TODO add callback for read data request
+
+void PE_ePWM_onReceive(PE_ePWM_t *pwm, uint8_t *data, uint8_t size)
+{
+    uint16_t val;
+
+    // Resolve command
+    if (pwm->cmd == PE_ePWM_CMD_NOP) {
+        pwm->cmd = *data & ~PE_ePWM_REG_MASK;
+        pwm->reg = *data & PE_ePWM_REG_MASK;
+    }
+
+    // Decode command
+    switch (pwm->cmd) {
+        //TODO for set angle, pulse, calibration reg == channel number
+        case PE_ePWM_CMD_SET_ANGLE:
+            val = *((uint16_t *) (data + 1));
+            (void) val;
+            break;
+        default:
+            pwm->cmd = PE_ePWM_CMD_NOP;
+    }
+}
