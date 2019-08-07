@@ -8,6 +8,11 @@
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
+long PE_ePWM_mapRange(long x, long in_min, long in_max, long out_min, long out_max)
+{
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 /**
  * Enable/disable PWM generation for channel group
  *
@@ -160,9 +165,19 @@ void PE_ePWM_onRequest(PE_ePWM_device_t *pwm, uint8_t **data, uint8_t *size)
             *data = (uint8_t *) &pwm->pulses[pwm->reg];
             *size = 2;
         case PE_ePWM_CMD_GET_ANGLE:
-            //TODO convert pulse to degree value based on min/max
-            *data = (uint8_t *) &pwm->pulses[pwm->reg];
-            *size = 2;
+            if ((pwm->registers[PE_ePWM_REG_CONFIG] & PE_ePWM_CONFIG_MODE0) != 0x0U) {
+                uint16_t angle = PE_ePWM_mapRange(
+                        pwm->pulses[pwm->reg],
+                        pwm->min[pwm->reg],
+                        pwm->max[pwm->reg],
+                        0,
+                        18000
+                );
+
+                //TODO copy data instead of pass by address
+                *data = (uint8_t *) &angle;
+                *size = 2;
+            }
         default:
             break;
     }
