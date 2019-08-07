@@ -128,13 +128,13 @@ void PE_ePWM_onReceive(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t size)
     // Decode command
     switch (pwm->cmd) {
         case PE_ePWM_CMD_W_REGISTER:
-            PE_ePWM_setRegister(pwm->reg, *(data + 1));
+            pwm->registers[pwm->reg] = *(data + 1);
             break;
         case PE_ePWM_CMD_SET_REGISTER_BITS:
-            PE_ePWM_setRegisterBits(pwm->reg, *(data + 1));
+            pwm->registers[pwm->reg] |= *(data + 1);
             break;
         case PE_ePWM_CMD_CLR_REGISTER_BITS:
-            PE_ePWM_clrRegisterBits(pwm->reg, *(data + 1));
+            pwm->registers[pwm->reg] &= (uint8_t) ~(*(data + 1));
             break;
         case PE_ePWM_CMD_SET_PULSE:
             if (size >= 5) {
@@ -162,9 +162,9 @@ void PE_ePWM_onReceive(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t size)
                 );
             }
             break;
-        default:
-            pwm->cmd = PE_ePWM_CMD_NOP;
     }
+
+    //TODO update calibration if we enter servo mode
 }
 
 /**
@@ -185,6 +185,7 @@ void PE_ePWM_onRequest(PE_ePWM_device_t *pwm, uint8_t **data, uint8_t *size)
         case PE_ePWM_CMD_GET_PULSE:
             *data = (uint8_t *) &pwm->pulses[pwm->reg];
             *size = 2;
+            break;
         case PE_ePWM_CMD_GET_ANGLE:
             if ((pwm->registers[PE_ePWM_REG_CONFIG] & PE_ePWM_CONFIG_MODE) == PE_ePWM_MODE_SERVO) {
                 uint16_t angle = PE_ePWM_mapRange(
@@ -199,7 +200,6 @@ void PE_ePWM_onRequest(PE_ePWM_device_t *pwm, uint8_t **data, uint8_t *size)
                 *data = (uint8_t *) &angle;
                 *size = 2;
             }
-        default:
             break;
     }
 
