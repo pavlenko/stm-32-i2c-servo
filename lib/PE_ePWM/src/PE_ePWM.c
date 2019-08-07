@@ -148,14 +148,21 @@ void PE_ePWM_onReceive(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t size)
  * @param data
  * @param size
  */
-void PE_ePWM_onRequest(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t *size)
+void PE_ePWM_onRequest(PE_ePWM_device_t *pwm, uint8_t **data, uint8_t *size)
 {
     // Decode command & set response
     switch (pwm->cmd) {
         case PE_ePWM_CMD_R_REGISTER:
-            data = &pwm->registers[pwm->reg];
+            *data = &pwm->registers[pwm->reg];
             *size = 1;
             break;
+        case PE_ePWM_CMD_GET_PULSE:
+            *data = (uint8_t *) &pwm->pulses[pwm->reg];
+            *size = 2;
+        case PE_ePWM_CMD_GET_ANGLE:
+            //TODO convert pulse to degree value based on min/max
+            *data = (uint8_t *) &pwm->pulses[pwm->reg];
+            *size = 2;
         default:
             break;
     }

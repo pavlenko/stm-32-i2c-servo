@@ -18,8 +18,10 @@ extern "C" {
 #define PE_ePWM_CMD_W_REGISTER        0x08U // Set register (overwrite value)
 #define PE_ePWM_CMD_SET_REGISTER_BITS 0x10U // Set register bits to 1
 #define PE_ePWM_CMD_CLR_REGISTER_BITS 0x18U // Set register bits to 0
-#define PE_ePWM_CMD_SET_PULSE         0x20U // Set channel pulse width
-#define PE_ePWM_CMD_SET_ANGLE         0x28U // Set channel degree, only for servo mode
+#define PE_ePWM_CMD_GET_PULSE         0x20U // Get channel pulse width
+#define PE_ePWM_CMD_SET_PULSE         0x28U // Set channel pulse width
+#define PE_ePWM_CMD_GET_ANGLE         0x30U // Get channel degree, only for servo mode
+#define PE_ePWM_CMD_SET_ANGLE         0x38U // Set channel degree, only for servo mode
 #define PE_ePWM_CMD_NOP               0xFFU
 
 /** Registers *****************************************************************/
@@ -173,9 +175,12 @@ typedef enum {
 
 //TODO maybe create separate types for device & remote modes
 typedef struct {
-    uint8_t cmd;
-    uint8_t reg;
-    uint8_t registers[4];
+    uint8_t  cmd;
+    uint8_t  reg;
+    uint8_t  registers[4];
+    uint16_t pulses[8];
+    uint16_t min[8];
+    uint16_t max[8];
 } PE_ePWM_device_t; // <-- for use mcu as pwm driver
 
 typedef struct {} PE_ePWM_remote_t; // <-- for control pwm driver
@@ -200,6 +205,10 @@ void PE_ePWM_setPulseReset(PE_ePWM_t *pwm, uint16_t value);
 
 void PE_ePWM_setPulse(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value);
 void PE_ePWM_setAngle(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value);
+
+
+//TODO this is draft
+void PE_ePWM_onRequest(PE_ePWM_device_t *pwm, uint8_t **data, uint8_t *size);
 
 #ifdef __cplusplus
 }
