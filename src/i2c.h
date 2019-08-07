@@ -44,6 +44,13 @@ void MX_I2C_onReceive(I2C_t *i2c);
 void MX_I2C_onSuccess(I2C_t *i2c);
 void MX_I2C_onFailure(I2C_t *i2c);
 
+//TODO this callbacks must be called inside appropriate HAL callbacks
+void I2Cx_onAddressReceived(I2C_t *i2c, uint8_t direction);
+void I2Cx_onSlaveRXCompleted(I2C_t *i2c);
+void I2Cx_onSlaveTXCompleted(I2C_t *i2c);
+void I2Cx_onListenCompleted(I2C_t *i2c);
+void I2Cx_onErrorDetected(I2C_t *i2c);
+
 #ifdef __cplusplus
 }
 #endif

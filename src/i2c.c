@@ -92,6 +92,55 @@ __attribute__((weak)) void MX_I2C_onFailure(I2C_t *i2c)
     (void) i2c;
 }
 
+void I2Cx_onAddressReceived(I2C_t *i2c, uint8_t direction)
+{
+    // First of all, check the transfer direction to call the correct Slave Interface
+    if (direction == I2C_DIRECTION_TRANSMIT) {
+        i2c->status = I2C_STATUS_BUSY_RX;
+
+        if (HAL_I2C_Slave_Sequential_Receive_IT(i2c->handle, &(i2c->rxBufferData[i2c->rxBufferSize]), 1, I2C_FIRST_FRAME) != HAL_OK) {
+            Error_Handler(__FILE__, __LINE__);
+        }
+
+        i2c->rxBufferSize++;
+    } else {
+        i2c->status = I2C_STATUS_BUSY_TX;
+
+        MX_I2C_onRequest(i2c);
+
+        if (HAL_I2C_Slave_Sequential_Transmit_IT(i2c->handle, &(i2c->txBufferData[0]), i2c->txBufferSize, I2C_LAST_FRAME) != HAL_OK) {
+            Error_Handler(__FILE__, __LINE__);
+        }
+    }
+}
+
+void I2Cx_onSlaveRXCompleted(I2C_t *i2c)
+{
+    if (HAL_I2C_Slave_Sequential_Receive_IT(i2c->handle, &(i2c->rxBufferData[i2c->rxBufferSize]), 1, I2C_FIRST_FRAME) != HAL_OK) {
+        Error_Handler(__FILE__, __LINE__);
+    }
+
+    i2c->rxBufferSize++;
+}
+
+void I2Cx_onSlaveTXCompleted(I2C_t *i2c)
+{}
+
+void I2Cx_onListenCompleted(I2C_t *i2c)
+{
+    MX_I2C_onReceive(i2c);
+    i2c->status = I2C_STATUS_SUCCESS;
+}
+
+void I2Cx_onErrorDetected(I2C_t *i2c)
+{
+    if (HAL_I2C_GetError(i2c->handle) != HAL_I2C_ERROR_AF) {
+        Error_Handler(__FILE__, __LINE__);
+    }
+
+    i2c->status = I2C_STATUS_FAILURE;
+}
+
 void HAL_I2C_MspInit(I2C_HandleTypeDef* i2c)
 {
     GPIO_InitTypeDef GPIO_InitStruct;

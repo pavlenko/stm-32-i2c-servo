@@ -289,11 +289,11 @@ __used void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
     }
 }
 
-__used void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
+/*__used void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
     MX_LED_ON(50);
     UNUSED(hi2c);
-}
+}*/
 
 __used void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
 {
@@ -311,11 +311,11 @@ __used void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
     }
 }
 
-__used void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef *hi2c)
+/*__used void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef *hi2c)
 {
     MX_LED_ON(50);
     UNUSED(hi2c);
-}
+}*/
 
 __used void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *i2c)
 {
