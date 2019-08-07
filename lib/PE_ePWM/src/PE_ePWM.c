@@ -110,6 +110,20 @@ void PE_ePWM_setAngle(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value)
 }
 
 //TODO add callback for read data request
+void PE_ePWM_onRequest(PE_ePWM_t *pwm, uint8_t *data, uint8_t *size)
+{
+    // Resolve command
+    if (pwm->cmd == PE_ePWM_CMD_NOP) {
+        pwm->cmd = *data & ~PE_ePWM_REG_MASK;
+        pwm->reg = *data & PE_ePWM_REG_MASK;
+    }
+
+    // Decode command
+    switch (pwm->cmd) {
+        case PE_ePWM_CMD_R_REGISTER:
+            break;
+    }
+}
 
 void PE_ePWM_onReceive(PE_ePWM_t *pwm, uint8_t *data, uint8_t size)
 {
@@ -123,6 +137,15 @@ void PE_ePWM_onReceive(PE_ePWM_t *pwm, uint8_t *data, uint8_t size)
 
     // Decode command
     switch (pwm->cmd) {
+        case PE_ePWM_CMD_W_REGISTER:
+            PE_ePWM_setRegister(pwm->reg, *(data + 1));
+            break;
+        case PE_ePWM_CMD_SET_REGISTER_BITS:
+            PE_ePWM_setRegisterBits(pwm->reg, *(data + 1));
+            break;
+        case PE_ePWM_CMD_CLR_REGISTER_BITS:
+            PE_ePWM_clrRegisterBits(pwm->reg, *(data + 1));
+            break;
         //TODO for set angle, pulse, calibration reg == channel number
         case PE_ePWM_CMD_SET_ANGLE:
             val = *((uint16_t *) (data + 1));
