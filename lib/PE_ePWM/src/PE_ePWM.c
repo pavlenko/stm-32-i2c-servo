@@ -136,10 +136,19 @@ void PE_ePWM_onReceive(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t size)
         case PE_ePWM_CMD_CLR_REGISTER_BITS:
             PE_ePWM_clrRegisterBits(pwm->reg, *(data + 1));
             break;
-        //TODO for set angle, pulse, calibration reg == channel number
-        case PE_ePWM_CMD_SET_ANGLE:
-            val = *((uint16_t *) (data + 1));
-            (void) val;
+        case PE_ePWM_CMD_SET_PULSE://TODO decode command as val and val+time
+            pwm->pulses[pwm->reg] = (uint16_t) *(data + 1);
+            break;
+        case PE_ePWM_CMD_SET_ANGLE://TODO decode command as val and val+time
+            if ((pwm->registers[PE_ePWM_REG_CONFIG] & PE_ePWM_CONFIG_MODE0) != 0x0U) {
+                pwm->pulses[pwm->reg] = (uint16_t) PE_ePWM_mapRange(
+                        *(data + 1),
+                        0,
+                        18000,
+                        pwm->min[pwm->reg],
+                        pwm->max[pwm->reg]
+                );
+            }
             break;
         default:
             pwm->cmd = PE_ePWM_CMD_NOP;

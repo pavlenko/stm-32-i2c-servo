@@ -22,6 +22,12 @@ extern "C" {
 #define PE_ePWM_CMD_SET_PULSE         0x28U // Set channel pulse width
 #define PE_ePWM_CMD_GET_ANGLE         0x30U // Get channel degree, only for servo mode
 #define PE_ePWM_CMD_SET_ANGLE         0x38U // Set channel degree, only for servo mode
+
+#define PE_ePWM_CMD_GET_CALIBRATION_MIN 0x40U
+#define PE_ePWM_CMD_SET_CALIBRATION_MIN 0x48U
+#define PE_ePWM_CMD_GET_CALIBRATION_MAX 0x50U
+#define PE_ePWM_CMD_SET_CALIBRATION_MAX 0x58U
+
 #define PE_ePWM_CMD_NOP               0xFFU
 
 /** Registers *****************************************************************/
