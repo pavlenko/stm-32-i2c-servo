@@ -78,6 +78,10 @@ extern "C" {
 
 /** CONFIG bits ***************************************************************/
 
+#define PE_ePWM_CONFIG_MODE_Pos    (0x00U)
+#define PE_ePWM_CONFIG_MODE_Msk    (0x03U << PE_ePWM_CONFIG_MODE_Pos)
+#define PE_ePWM_CONFIG_MODE        PE_ePWM_CONFIG_MODE_Msk
+
 #define PE_ePWM_CONFIG_MODE0_Pos   (0x00U)
 #define PE_ePWM_CONFIG_MODE0_Msk   (0x01U << PE_ePWM_CONFIG_MODE0_Pos)
 #define PE_ePWM_CONFIG_MODE0       PE_ePWM_CONFIG_MODE0_Msk
@@ -155,6 +159,13 @@ typedef enum {
 } PE_ePWM_BIT_t;
 
 typedef enum {
+    PE_ePWM_MODE_PULSE     = 0x00U,
+    PE_ePWM_MODE_SERVO     = PE_ePWM_CONFIG_MODE0,
+    PE_ePWM_MODE_RESERVED0 = PE_ePWM_CONFIG_MODE1,
+    PE_ePWM_MODE_RESERVED1 = PE_ePWM_CONFIG_MODE1|PE_ePWM_CONFIG_MODE0,
+} PE_ePWM_MODE_t;
+
+typedef enum {
     PE_ePWM_EN_PWR_NONE    = 0x00U,
     PE_ePWM_EN_PWR_GROUP0  = PE_ePWM_CONFIG_EN_PWR0,
     PE_ePWM_EN_PWR_GROUP1  = PE_ePWM_CONFIG_EN_PWR1,
@@ -185,6 +196,7 @@ typedef struct {
     uint8_t  reg;
     uint8_t  registers[4];
     uint16_t pulses[8];
+    uint16_t periods[8];
     uint16_t min[8];
     uint16_t max[8];
 } PE_ePWM_device_t; // <-- for use mcu as pwm driver

@@ -136,11 +136,23 @@ void PE_ePWM_onReceive(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t size)
         case PE_ePWM_CMD_CLR_REGISTER_BITS:
             PE_ePWM_clrRegisterBits(pwm->reg, *(data + 1));
             break;
-        case PE_ePWM_CMD_SET_PULSE://TODO decode command as val and val+time
+        case PE_ePWM_CMD_SET_PULSE:
+            if (size >= 5) {
+                pwm->periods[pwm->reg] = (uint16_t) *(data + 3);
+            } else {
+                pwm->periods[pwm->reg] = 0;
+            }
+
             pwm->pulses[pwm->reg] = (uint16_t) *(data + 1);
             break;
-        case PE_ePWM_CMD_SET_ANGLE://TODO decode command as val and val+time
-            if ((pwm->registers[PE_ePWM_REG_CONFIG] & PE_ePWM_CONFIG_MODE0) != 0x0U) {
+        case PE_ePWM_CMD_SET_ANGLE:
+            if ((pwm->registers[PE_ePWM_REG_CONFIG] & PE_ePWM_CONFIG_MODE) != PE_ePWM_MODE_SERVO) {
+                if (size >= 5) {
+                    pwm->periods[pwm->reg] = (uint16_t) *(data + 3);
+                } else {
+                    pwm->periods[pwm->reg] = 0;
+                }
+
                 pwm->pulses[pwm->reg] = (uint16_t) PE_ePWM_mapRange(
                         *(data + 1),
                         0,
@@ -174,7 +186,7 @@ void PE_ePWM_onRequest(PE_ePWM_device_t *pwm, uint8_t **data, uint8_t *size)
             *data = (uint8_t *) &pwm->pulses[pwm->reg];
             *size = 2;
         case PE_ePWM_CMD_GET_ANGLE:
-            if ((pwm->registers[PE_ePWM_REG_CONFIG] & PE_ePWM_CONFIG_MODE0) != 0x0U) {
+            if ((pwm->registers[PE_ePWM_REG_CONFIG] & PE_ePWM_CONFIG_MODE) == PE_ePWM_MODE_SERVO) {
                 uint16_t angle = PE_ePWM_mapRange(
                         pwm->pulses[pwm->reg],
                         pwm->min[pwm->reg],
