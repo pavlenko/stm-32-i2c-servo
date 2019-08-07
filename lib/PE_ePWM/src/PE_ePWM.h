@@ -35,6 +35,7 @@ extern "C" {
 #define PE_ePWM_REG_RESERVED3 0x07U
 
 #define PE_ePWM_REG_MASK      0x07U
+#define PE_ePWM_REG_NONE      0xFFU
 
 /** Values ********************************************************************/
 
@@ -171,7 +172,12 @@ typedef enum {
 } PE_ePWM_CHANNEL_t;
 
 //TODO maybe create separate types for device & remote modes
-typedef struct {} PE_ePWM_device_t; // <-- for use mcu as pwm driver
+typedef struct {
+    uint8_t cmd;
+    uint8_t reg;
+    uint8_t registers[4];
+} PE_ePWM_device_t; // <-- for use mcu as pwm driver
+
 typedef struct {} PE_ePWM_remote_t; // <-- for control pwm driver
 
 typedef struct {

@@ -110,22 +110,7 @@ void PE_ePWM_setAngle(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value)
 }
 
 //TODO add callback for read data request
-void PE_ePWM_onRequest(PE_ePWM_t *pwm, uint8_t *data, uint8_t *size)
-{
-    // Resolve command
-    if (pwm->cmd == PE_ePWM_CMD_NOP) {
-        pwm->cmd = *data & ~PE_ePWM_REG_MASK;
-        pwm->reg = *data & PE_ePWM_REG_MASK;
-    }
-
-    // Decode command
-    switch (pwm->cmd) {
-        case PE_ePWM_CMD_R_REGISTER:
-            break;
-    }
-}
-
-void PE_ePWM_onReceive(PE_ePWM_t *pwm, uint8_t *data, uint8_t size)
+void PE_ePWM_onReceive(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t size)
 {
     uint16_t val;
 
@@ -154,4 +139,28 @@ void PE_ePWM_onReceive(PE_ePWM_t *pwm, uint8_t *data, uint8_t size)
         default:
             pwm->cmd = PE_ePWM_CMD_NOP;
     }
+}
+
+/**
+ * Executed after data direction changed from TX to RX
+ *
+ * @param pwm
+ * @param data
+ * @param size
+ */
+void PE_ePWM_onRequest(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t *size)
+{
+    // Decode command & set response
+    switch (pwm->cmd) {
+        case PE_ePWM_CMD_R_REGISTER:
+            data = &pwm->registers[pwm->reg];
+            *size = 1;
+            break;
+        default:
+            break;
+    }
+
+    // Reset command code & register code
+    pwm->cmd = PE_ePWM_CMD_NOP;
+    pwm->reg = PE_ePWM_REG_NONE;
 }
