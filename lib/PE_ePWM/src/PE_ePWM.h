@@ -170,6 +170,10 @@ typedef enum {
     PE_ePWM_CHANNEL_7 = 0x07U,
 } PE_ePWM_CHANNEL_t;
 
+//TODO maybe create separate types for device & remote modes
+typedef struct {} PE_ePWM_device_t; // <-- for use mcu as pwm driver
+typedef struct {} PE_ePWM_remote_t; // <-- for control pwm driver
+
 typedef struct {
     uint8_t cmd;
     uint8_t reg;
