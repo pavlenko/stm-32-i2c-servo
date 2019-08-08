@@ -4,6 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+#include <PE_ePWM.h>
 
 #include "main.h"
 #include "i2c.h"
@@ -198,6 +199,62 @@ uint16_t ____calculateStep(uint16_t source, uint16_t target, uint16_t duration)
     int diff = abs(source - target);
 
     return diff / duration;
+}
+
+void ____dispatch(PE_ePWM_device_t *pwm)
+{
+    for (uint8_t i = 0; i < 8; i++) {
+        if (pwm->channels[i].target == pwm->channels[i].source) {
+            pwm->channels[i].step = 0;
+            continue;
+        }
+
+        if (pwm->channels[i].step) {
+            if (pwm->channels[i].target > pwm->channels[i].source) {
+                pwm->channels[i].source += pwm->channels[i].step;
+
+                if (pwm->channels[i].target <= pwm->channels[i].source) {
+                    pwm->channels[i].source = pwm->channels[i].target;
+                    pwm->channels[i].step   = 0;
+                }
+            } else {
+                pwm->channels[i].source -= pwm->channels[i].step;
+
+                if (pwm->channels[i].target >= pwm->channels[i].source) {
+                    pwm->channels[i].source = pwm->channels[i].target;
+                    pwm->channels[i].step   = 0;
+                }
+            }
+        }
+
+        // Platform dependent code:
+        TIM_TypeDef *tim;
+        uint8_t num;
+        if (i < 4) {
+            num = i;
+            tim = TIM1_Handle.Instance;
+        } else {
+            num = i - 4;
+            tim = TIM4_Handle.Instance;
+        }
+
+        switch (num) {
+            case 0:
+                tim->CCR1 = pwm->channels[i].source;
+                break;
+            case 1:
+                tim->CCR2 = pwm->channels[i].source;
+                break;
+            case 2:
+                tim->CCR3 = pwm->channels[i].source;
+                break;
+            case 3:
+                tim->CCR4 = pwm->channels[i].source;
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void ____dispatchSpeed(TIM_HandleTypeDef *handle, uint16_t *source, uint16_t *target, uint16_t *step)

@@ -190,8 +190,14 @@ typedef enum {
     PE_ePWM_CHANNEL_7 = 0x07U,
 } PE_ePWM_CHANNEL_t;
 
-//TODO maybe create separate types for device & remote modes
 typedef struct {
+    uint16_t source;
+    uint16_t target;
+    uint16_t step;
+} PE_ePWM_channel_t;
+
+typedef struct {
+    PE_ePWM_channel_t channels[8];
     uint8_t  cmd;
     uint8_t  reg;
     uint8_t  registers[4];
