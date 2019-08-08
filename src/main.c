@@ -242,7 +242,7 @@ __used void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint
 
     if (i2c->Instance == I2Cx.handle->Instance) {
         // First of all, check the transfer direction to call the correct Slave Interface
-        if (direction == I2C_DIRECTION_TRANSMIT) {
+        /*if (direction == I2C_DIRECTION_TRANSMIT) {
             I2Cx.status = I2C_STATUS_BUSY_RX;
 
             if (HAL_I2C_Slave_Sequential_Receive_IT(i2c, &I2Cx.rxBufferData[I2Cx.rxBufferSize], 1, I2C_FIRST_FRAME) != HAL_OK) {
@@ -258,7 +258,8 @@ __used void HAL_I2C_AddrCallback(I2C_HandleTypeDef *i2c, uint8_t direction, uint
             if (HAL_I2C_Slave_Sequential_Transmit_IT(i2c, &I2Cx.txBufferData[0], I2Cx.txBufferSize, I2C_LAST_FRAME) != HAL_OK) {
                 Error_Handler(__FILE__, __LINE__);
             }
-        }
+        }*/
+        I2Cx_onAddressReceived(&I2Cx, direction);
     }
 }
 
@@ -267,8 +268,7 @@ __used void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
     MX_LED_ON(50);
 
     if (i2c->Instance == I2Cx.handle->Instance) {
-        //TODO onReceiveByte ???
-        if (I2Cx.rxBufferSize == 1) {
+        /*if (I2Cx.rxBufferSize == 1) {
             if (PWM_DRIVER_CMD_R_CODE == (I2Cx.rxBufferData[0] & ~PWM_DRIVER_CMD_RW_MASK)) {
                 PWM_driver_cmd = PWM_DRIVER_CMD_R_CODE;
                 PWM_driver_reg = (I2Cx.rxBufferData[0] & PWM_DRIVER_CMD_RW_MASK);
@@ -285,29 +285,33 @@ __used void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *i2c)
             Error_Handler(__FILE__, __LINE__);
         }
 
-        I2Cx.rxBufferSize++;
+        I2Cx.rxBufferSize++;*/
+        I2Cx_onSlaveRXCompleted(&I2Cx);
     }
 }
 
-/*__used void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
+__used void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *i2c)
 {
     MX_LED_ON(50);
-    UNUSED(hi2c);
-}*/
+
+    if (i2c->Instance == I2Cx.handle->Instance) {
+        I2Cx_onSlaveTXCompleted(&I2Cx);
+    }
+}
 
 __used void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *i2c)
 {
     MX_LED_ON(50);
 
     if (i2c->Instance == I2Cx.handle->Instance) {
-        //TODO onReceiveData if prev status == busy RX ???
-        if (PWM_driver_cmd == PWM_DRIVER_CMD_W_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
+        /*if (PWM_driver_cmd == PWM_DRIVER_CMD_W_CODE && PWM_driver_reg != PWM_DRIVER_REG_NONE) {
             uint16_t value = *((uint16_t *) &I2Cx.rxBufferData[1]);
             //TIM1_Handle.Instance->CCR1 = (uint32_t) value;
             *((__IO uint32_t *) PWM_driver_reg_map[PWM_driver_reg].addr) = (uint32_t) value;
         }
 
-        I2Cx.status = I2C_STATUS_SUCCESS;
+        I2Cx.status = I2C_STATUS_SUCCESS;*/
+        I2Cx_onListenCompleted(&I2Cx);
     }
 }
 
@@ -322,11 +326,12 @@ __used void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *i2c)
     MX_LED_ON(50);
 
     if (i2c->Instance == I2Cx.handle->Instance) {
-        if (HAL_I2C_GetError(i2c) != HAL_I2C_ERROR_AF) {
+        /*if (HAL_I2C_GetError(i2c) != HAL_I2C_ERROR_AF) {
             Error_Handler(__FILE__, __LINE__);
         }
 
-        I2Cx.status = I2C_STATUS_FAILURE;
+        I2Cx.status = I2C_STATUS_FAILURE;*/
+        I2Cx_onErrorDetected(&I2Cx);
     }
 }
 

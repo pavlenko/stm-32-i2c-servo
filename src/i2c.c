@@ -124,7 +124,9 @@ void I2Cx_onSlaveRXCompleted(I2C_t *i2c)
 }
 
 void I2Cx_onSlaveTXCompleted(I2C_t *i2c)
-{}
+{
+    i2c->txBufferSize = 0;
+}
 
 void I2Cx_onListenCompleted(I2C_t *i2c)
 {
