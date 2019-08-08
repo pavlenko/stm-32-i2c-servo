@@ -190,10 +190,13 @@ typedef enum {
     PE_ePWM_CHANNEL_7 = 0x07U,
 } PE_ePWM_CHANNEL_t;
 
+//TODO add function for update channel state depends on requests
 typedef struct {
     uint16_t source;
     uint16_t target;
     uint16_t step;
+    uint16_t min;
+    uint16_t max;
 } PE_ePWM_channel_t;
 
 typedef struct {
@@ -203,9 +206,9 @@ typedef struct {
     uint8_t  registers[4];
     uint16_t pulses[8];
     uint16_t periods[8];
-    uint16_t min[8];
-    uint16_t max[8];
-} PE_ePWM_device_t; // <-- for use mcu as pwm driver
+    uint16_t min[8];//TODO remove
+    uint16_t max[8];//TODO remove
+} PE_ePWM_device_t;
 
 typedef struct {} PE_ePWM_remote_t; // <-- for control pwm driver
 
