@@ -32,10 +32,10 @@ extern "C" {
 
 /** Registers *****************************************************************/
 
-#define PE_ePWM_REG_CONFIG    0x00U
-#define PE_ePWM_REG_PULSE_EN  0x01U
-#define PE_ePWM_REG_PULSE_CLK 0x02U // Configure pulse clock HZ
-#define PE_ePWM_REG_PULSE_RES 0x03U // Configure pulse reset value
+#define PE_ePWM_REG_CONFIG    0x00U // 8 bit
+#define PE_ePWM_REG_PULSE_EN  0x01U // 8 bit
+#define PE_ePWM_REG_PULSE_CLK 0x02U // 16 bit Configure pulse clock HZ
+#define PE_ePWM_REG_PULSE_RES 0x03U // 16 bit Configure pulse reset value
 
 #define PE_ePWM_REG_RESERVED0 0x04U
 #define PE_ePWM_REG_RESERVED1 0x05U
