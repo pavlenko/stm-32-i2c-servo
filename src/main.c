@@ -185,6 +185,54 @@ void HAL_MspInit(void)
 void HAL_MspDeInit(void)
 {}
 
+void ____setEnabledPWMGlobal(uint8_t val, uint8_t mask)
+{
+    //TODO tim1 affect 0bx1 bits
+    //TODO tim2 affect 0b1x bits
+}
+
+void ____setEnabledPWMChannel(uint8_t val, uint8_t mask)
+{
+    uint8_t mask1 = mask & 0x0FU; // Get lower 4 bits as mask for group 1
+    uint8_t mask2 = mask >> 4U;   // Get upper 4 bits as mask for group 2
+
+    HAL_StatusTypeDef (*callable)(TIM_HandleTypeDef *handle, uint32_t channel);
+
+    if (val) {
+        callable = HAL_TIM_PWM_Start; // If enable requested - start channel PWM
+    } else {
+        callable = HAL_TIM_PWM_Stop; // If disable requested - stop channel PWM
+    }
+
+    // Process group 1
+    if (mask1 & TIM_CHANNEL_1) {
+        callable(&TIM1_Handle, TIM_CHANNEL_1);
+    }
+    if (mask1 & TIM_CHANNEL_2) {
+        callable(&TIM1_Handle, TIM_CHANNEL_2);
+    }
+    if (mask1 & TIM_CHANNEL_3) {
+        callable(&TIM1_Handle, TIM_CHANNEL_3);
+    }
+    if (mask1 & TIM_CHANNEL_4) {
+        callable(&TIM1_Handle, TIM_CHANNEL_4);
+    }
+
+    // Process group 2
+    if (mask2 & TIM_CHANNEL_1) {
+        callable(&TIM4_Handle, TIM_CHANNEL_1);
+    }
+    if (mask2 & TIM_CHANNEL_2) {
+        callable(&TIM4_Handle, TIM_CHANNEL_2);
+    }
+    if (mask2 & TIM_CHANNEL_3) {
+        callable(&TIM4_Handle, TIM_CHANNEL_3);
+    }
+    if (mask2 & TIM_CHANNEL_4) {
+        callable(&TIM4_Handle, TIM_CHANNEL_4);
+    }
+}
+
 /**
  * @param i2c
  */
