@@ -187,8 +187,31 @@ void HAL_MspDeInit(void)
 
 void ____setEnabledPWMGlobal(uint8_t val, uint8_t mask)
 {
-    //TODO tim1 affect 0bx1 bits
-    //TODO tim2 affect 0b1x bits
+    uint16_t pulse_res = 20000;//TODO if servo mode use 20000 value else from reg
+    uint16_t pulse_clk = 50;//TODO if servo mode use 50 value else from reg
+    uint32_t pre_scale = (SystemCoreClock / (pulse_res * pulse_clk)) - 1;
+
+    if (mask & 0x01U) {
+        if (val) {
+            TIM1_Handle.Instance->ARR = (uint32_t) pulse_res;
+            TIM1_Handle.Instance->PSC = (uint32_t) pre_scale;
+
+            TIM1_Handle.Instance->BDTR |= (TIM_BDTR_MOE);
+        } else {
+            TIM1_Handle.Instance->BDTR &= ~(TIM_BDTR_MOE);
+        }
+    }
+
+    if (mask & 0x02U) {
+        if (val) {
+            TIM4_Handle.Instance->ARR = (uint32_t) pulse_res;
+            TIM4_Handle.Instance->PSC = (uint32_t) pre_scale;
+
+            TIM4_Handle.Instance->BDTR |= (TIM_BDTR_MOE);
+        } else {
+            TIM4_Handle.Instance->BDTR &= ~(TIM_BDTR_MOE);
+        }
+    }
 }
 
 void ____setEnabledPWMChannel(uint8_t val, uint8_t mask)
