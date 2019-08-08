@@ -2,6 +2,8 @@
 
 #include <malloc.h>
 #include <string.h>
+#include <math.h>
+#include <stdlib.h>
 
 #include "main.h"
 #include "i2c.h"
@@ -184,6 +186,51 @@ void HAL_MspInit(void)
  */
 void HAL_MspDeInit(void)
 {}
+
+/**
+ * @param source   current servo pulse width
+ * @param target   target servo pulse width
+ * @param duration time to reach target pulse width in seconds (maybe better use millis?)
+ * @return
+ */
+uint16_t ____calculateStep(uint16_t source, uint16_t target, uint16_t duration)
+{
+    int diff = abs(source - target);
+
+    return diff / duration;
+}
+
+void ____dispatchSpeed(TIM_HandleTypeDef *handle, uint16_t *source, uint16_t *target, uint16_t *step)
+{
+    if (*target == *source) {
+        *step = 0;
+        return;
+    }
+
+    if (*step) {
+        if (*target > *source) {
+            *source += *step;
+
+            if (*target <= *source) {
+                *source = *target;
+                *step   = 0;
+            }
+        } else {
+            *source -= *step;
+
+            if (*target >= *source) {
+                *source = *target;
+                *step   = 0;
+            }
+        }
+    }
+
+    //TODO set specific channel pulse
+    handle->Instance->CCR1 = *source;
+    handle->Instance->CCR2 = *source;
+    handle->Instance->CCR3 = *source;
+    handle->Instance->CCR4 = *source;
+}
 
 void ____setEnabledPWMGlobal(uint8_t val, uint8_t mask)
 {
