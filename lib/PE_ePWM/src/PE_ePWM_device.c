@@ -9,6 +9,8 @@
 /* Private function prototypes -----------------------------------------------*/
 
 long PE_ePWM_device_map(long x, long in_min, long in_max, long out_min, long out_max);
+void PE_ePWM_device_setPulse(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t pulse, uint16_t durationMS);
+void PE_ePWM_device_setAngle(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t angle, uint16_t durationMS);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -33,28 +35,19 @@ void PE_ePWM_device_onReceive(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t size
             break;
         case PE_ePWM_CMD_SET_PULSE:
             if (size >= 5) {
-                pwm->periods[pwm->reg] = (uint16_t) *(data + 3);
+                PE_ePWM_device_setPulse(pwm, pwm->reg, (uint16_t) *(data + 1), (uint16_t) *(data + 3));
             } else {
-                pwm->periods[pwm->reg] = 0;
+                PE_ePWM_device_setPulse(pwm, pwm->reg, (uint16_t) *(data + 1), 0);
             }
 
-            pwm->pulses[pwm->reg] = (uint16_t) *(data + 1);
             break;
         case PE_ePWM_CMD_SET_ANGLE:
             if ((pwm->registers[PE_ePWM_REG_CONFIG] & PE_ePWM_CONFIG_MODE) != PE_ePWM_MODE_SERVO) {
                 if (size >= 5) {
-                    pwm->periods[pwm->reg] = (uint16_t) *(data + 3);
+                    PE_ePWM_device_setAngle(pwm, pwm->reg, *(data + 1), (uint16_t) *(data + 3));
                 } else {
-                    pwm->periods[pwm->reg] = 0;
+                    PE_ePWM_device_setAngle(pwm, pwm->reg, *(data + 1), 0);
                 }
-
-                pwm->pulses[pwm->reg] = (uint16_t) PE_ePWM_device_map(
-                        *(data + 1),
-                        0,
-                        18000,
-                        pwm->min[pwm->reg],
-                        pwm->max[pwm->reg]
-                );
             }
             break;
     }
@@ -144,19 +137,14 @@ long PE_ePWM_device_map(long x, long in_min, long in_max, long out_min, long out
 }
 
 /**
- * @param source   current servo pulse width
- * @param target   target servo pulse width
- * @param duration time to reach target pulse width in seconds (maybe better use millis?)
- * @return
+ * Set channel pulse ad millis
+ *
+ * @param pwm
+ * @param channel
+ * @param pulse
+ * @param durationMS
  */
-uint16_t ____calculateStep(uint16_t source, uint16_t target, uint16_t duration)
-{
-    int diff = abs(source - target);
-
-    return diff / duration;
-}
-
-void ____setPulse(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t pulse, uint16_t durationMS)
+void PE_ePWM_device_setPulse(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t pulse, uint16_t durationMS)
 {
     pwm->channels[channel].step = abs(pulse - pwm->channels[channel].source) / (durationMS / 20000);
 
@@ -168,6 +156,27 @@ void ____setPulse(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t p
 
         PE_ePWM_device_updateCH(pwm, channel);
     }
+}
+
+/**
+ * Set channel pulse as degree
+ *
+ * @param pwm
+ * @param channel
+ * @param angle
+ * @param durationMS
+ */
+void PE_ePWM_device_setAngle(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t angle, uint16_t durationMS)
+{
+    uint16_t pulse = (uint16_t) PE_ePWM_device_map(
+            angle,
+            0,
+            18000,
+            pwm->channels[pwm->reg].min,
+            pwm->channels[pwm->reg].max
+    );
+
+    PE_ePWM_device_setPulse(pwm, channel, pulse, durationMS);
 }
 
 void ____setEnabledPWMGlobal(uint8_t val, uint8_t mask)
