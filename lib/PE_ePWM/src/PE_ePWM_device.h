@@ -10,6 +10,7 @@ extern "C" {
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "PE_ePWM.h"
 
@@ -42,7 +43,7 @@ typedef struct {
 /* Exported functions ------------------------------------------------------- */
 
 void PE_ePWM_device_onReceive(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t size);
-void PE_ePWM_device_onRequest(PE_ePWM_device_t *pwm, uint8_t **data, uint8_t *size);
+void PE_ePWM_device_onRequest(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t *size);
 void PE_ePWM_device_dispatch(PE_ePWM_device_t *pwm);
 void PE_ePWM_device_updateCH(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel);
 

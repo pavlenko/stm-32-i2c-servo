@@ -69,30 +69,29 @@ void PE_ePWM_device_onReceive(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t size
  * @param data
  * @param size
  */
-void PE_ePWM_device_onRequest(PE_ePWM_device_t *pwm, uint8_t **data, uint8_t *size)
+void PE_ePWM_device_onRequest(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t *size)
 {
     // Decode command & set response
     switch (pwm->cmd) {
         case PE_ePWM_CMD_R_REGISTER:
-            *data = &pwm->registers[pwm->reg];
+            memcpy(data, &(pwm->registers[pwm->reg]), 1);
             *size = 1;
             break;
         case PE_ePWM_CMD_GET_PULSE:
-            *data = (uint8_t *) &pwm->pulses[pwm->reg];
+            memcpy(data, &(pwm->channels[pwm->reg].source), 2);
             *size = 2;
             break;
         case PE_ePWM_CMD_GET_ANGLE:
             if ((pwm->registers[PE_ePWM_REG_CONFIG] & PE_ePWM_CONFIG_MODE) == PE_ePWM_MODE_SERVO) {
                 uint16_t angle = PE_ePWM_device_map(
-                        pwm->pulses[pwm->reg],
-                        pwm->min[pwm->reg],
-                        pwm->max[pwm->reg],
+                        pwm->channels[pwm->reg].source,
+                        pwm->channels[pwm->reg].min,
+                        pwm->channels[pwm->reg].max,
                         0,
                         18000
                 );
 
-                //TODO copy data instead of pass by address
-                *data = (uint8_t *) &angle;
+                memcpy(data, &angle, 2);
                 *size = 2;
             }
             break;
