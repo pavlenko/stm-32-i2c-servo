@@ -97,7 +97,7 @@ void PE_ePWM_setPulseReset(PE_ePWM_t *pwm, uint16_t value)
  * @param channel
  * @param value
  */
-void PE_ePWM_setPulse(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value)
+void PE_ePWM_setPulse(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t value)
 {
     pwm->send(PE_ePWM_CMD_SET_PULSE + channel, (uint8_t *) &value, 2);
 }
@@ -109,7 +109,7 @@ void PE_ePWM_setPulse(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value)
  * @param channel
  * @param value
  */
-void PE_ePWM_setAngle(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value)
+void PE_ePWM_setAngle(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t value)
 {
     pwm->send(PE_ePWM_CMD_SET_ANGLE + channel, (uint8_t *) &value, 2);
 }

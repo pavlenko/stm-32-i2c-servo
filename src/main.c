@@ -201,6 +201,37 @@ uint16_t ____calculateStep(uint16_t source, uint16_t target, uint16_t duration)
     return diff / duration;
 }
 
+void ____setPulseImmediate(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel)
+{
+    TIM_TypeDef *tim;
+    uint8_t num;
+    if (channel < 4) {
+        num = channel;
+        tim = TIM1_Handle.Instance;
+    } else {
+        num = channel - 4;
+        tim = TIM4_Handle.Instance;
+    }
+
+    switch (num) {
+        case 0:
+            tim->CCR1 = pwm->channels[channel].source;
+            break;
+        case 1:
+            tim->CCR2 = pwm->channels[channel].source;
+            break;
+        case 2:
+            tim->CCR3 = pwm->channels[channel].source;
+            break;
+        case 3:
+            tim->CCR4 = pwm->channels[channel].source;
+            break;
+        default:
+            break;
+    }
+}
+
+//TODO must be called each 0.02 s
 void ____dispatch(PE_ePWM_device_t *pwm)
 {
     for (uint8_t i = 0; i < 8; i++) {
@@ -227,66 +258,22 @@ void ____dispatch(PE_ePWM_device_t *pwm)
             }
         }
 
-        // Platform dependent code:
-        TIM_TypeDef *tim;
-        uint8_t num;
-        if (i < 4) {
-            num = i;
-            tim = TIM1_Handle.Instance;
-        } else {
-            num = i - 4;
-            tim = TIM4_Handle.Instance;
-        }
-
-        switch (num) {
-            case 0:
-                tim->CCR1 = pwm->channels[i].source;
-                break;
-            case 1:
-                tim->CCR2 = pwm->channels[i].source;
-                break;
-            case 2:
-                tim->CCR3 = pwm->channels[i].source;
-                break;
-            case 3:
-                tim->CCR4 = pwm->channels[i].source;
-                break;
-            default:
-                break;
-        }
+        ____setPulseImmediate(pwm, i);
     }
 }
 
-void ____dispatchSpeed(TIM_HandleTypeDef *handle, uint16_t *source, uint16_t *target, uint16_t *step)
+void ____setPulse(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t pulse, uint16_t durationMS)
 {
-    if (*target == *source) {
-        *step = 0;
-        return;
+    pwm->channels[channel].step = abs(pulse - pwm->channels[channel].source) / (durationMS / 20000);
+
+    if (pwm->channels[channel].step > 0) {
+        pwm->channels[channel].target = pulse;
+    } else {
+        pwm->channels[channel].source = pulse;
+        pwm->channels[channel].target = pulse;
+
+        ____setPulseImmediate(pwm, channel);
     }
-
-    if (*step) {
-        if (*target > *source) {
-            *source += *step;
-
-            if (*target <= *source) {
-                *source = *target;
-                *step   = 0;
-            }
-        } else {
-            *source -= *step;
-
-            if (*target >= *source) {
-                *source = *target;
-                *step   = 0;
-            }
-        }
-    }
-
-    //TODO set specific channel pulse
-    handle->Instance->CCR1 = *source;
-    handle->Instance->CCR2 = *source;
-    handle->Instance->CCR3 = *source;
-    handle->Instance->CCR4 = *source;
 }
 
 void ____setEnabledPWMGlobal(uint8_t val, uint8_t mask)

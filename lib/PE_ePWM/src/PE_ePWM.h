@@ -188,7 +188,7 @@ typedef enum {
     PE_ePWM_CHANNEL_5 = 0x05U,
     PE_ePWM_CHANNEL_6 = 0x06U,
     PE_ePWM_CHANNEL_7 = 0x07U,
-} PE_ePWM_CHANNEL_t;
+} PE_ePWM_CHANNEL_N_t;
 
 //TODO add function for update channel state depends on requests
 typedef struct {
@@ -230,8 +230,8 @@ void PE_ePWM_setPulseEN(PE_ePWM_t *pwm, PE_ePWM_BIT_t value, uint8_t mask);
 void PE_ePWM_setPulseClock(PE_ePWM_t *pwm, uint16_t value);
 void PE_ePWM_setPulseReset(PE_ePWM_t *pwm, uint16_t value);
 
-void PE_ePWM_setPulse(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value);
-void PE_ePWM_setAngle(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_t channel, uint16_t value);
+void PE_ePWM_setPulse(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t value);
+void PE_ePWM_setAngle(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t value);
 
 
 //TODO this is draft
