@@ -190,26 +190,6 @@ typedef enum {
     PE_ePWM_CHANNEL_7 = 0x07U,
 } PE_ePWM_CHANNEL_N_t;
 
-//TODO add function for update channel state depends on requests
-typedef struct {
-    uint16_t source;
-    uint16_t target;
-    uint16_t step;
-    uint16_t min;
-    uint16_t max;
-} PE_ePWM_channel_t;
-
-typedef struct {
-    PE_ePWM_channel_t channels[8];
-    uint8_t  cmd;
-    uint8_t  reg;
-    uint8_t  registers[4];
-    uint16_t pulses[8];
-    uint16_t periods[8];
-    uint16_t min[8];//TODO remove
-    uint16_t max[8];//TODO remove
-} PE_ePWM_device_t;
-
 typedef struct {} PE_ePWM_remote_t; // <-- for control pwm driver
 
 typedef struct {
@@ -232,10 +212,6 @@ void PE_ePWM_setPulseReset(PE_ePWM_t *pwm, uint16_t value);
 
 void PE_ePWM_setPulse(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t value);
 void PE_ePWM_setAngle(PE_ePWM_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t value);
-
-
-//TODO this is draft
-void PE_ePWM_onRequest(PE_ePWM_device_t *pwm, uint8_t **data, uint8_t *size);
 
 #ifdef __cplusplus
 }

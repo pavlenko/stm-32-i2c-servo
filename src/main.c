@@ -4,7 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
-#include <PE_ePWM.h>
+#include <PE_ePWM_device.h>
 
 #include "main.h"
 #include "i2c.h"
@@ -188,20 +188,7 @@ void HAL_MspInit(void)
 void HAL_MspDeInit(void)
 {}
 
-/**
- * @param source   current servo pulse width
- * @param target   target servo pulse width
- * @param duration time to reach target pulse width in seconds (maybe better use millis?)
- * @return
- */
-uint16_t ____calculateStep(uint16_t source, uint16_t target, uint16_t duration)
-{
-    int diff = abs(source - target);
-
-    return diff / duration;
-}
-
-void ____setPulseImmediate(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel)
+void PE_ePWM_device_updateCH(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel)
 {
     TIM_TypeDef *tim;
     uint8_t num;
@@ -228,122 +215,6 @@ void ____setPulseImmediate(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel)
             break;
         default:
             break;
-    }
-}
-
-//TODO must be called each 0.02 s
-void ____dispatch(PE_ePWM_device_t *pwm)
-{
-    for (uint8_t i = 0; i < 8; i++) {
-        if (pwm->channels[i].target == pwm->channels[i].source) {
-            pwm->channels[i].step = 0;
-            continue;
-        }
-
-        if (pwm->channels[i].step) {
-            if (pwm->channels[i].target > pwm->channels[i].source) {
-                pwm->channels[i].source += pwm->channels[i].step;
-
-                if (pwm->channels[i].target <= pwm->channels[i].source) {
-                    pwm->channels[i].source = pwm->channels[i].target;
-                    pwm->channels[i].step   = 0;
-                }
-            } else {
-                pwm->channels[i].source -= pwm->channels[i].step;
-
-                if (pwm->channels[i].target >= pwm->channels[i].source) {
-                    pwm->channels[i].source = pwm->channels[i].target;
-                    pwm->channels[i].step   = 0;
-                }
-            }
-        }
-
-        ____setPulseImmediate(pwm, i);
-    }
-}
-
-void ____setPulse(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t pulse, uint16_t durationMS)
-{
-    pwm->channels[channel].step = abs(pulse - pwm->channels[channel].source) / (durationMS / 20000);
-
-    if (pwm->channels[channel].step > 0) {
-        pwm->channels[channel].target = pulse;
-    } else {
-        pwm->channels[channel].source = pulse;
-        pwm->channels[channel].target = pulse;
-
-        ____setPulseImmediate(pwm, channel);
-    }
-}
-
-void ____setEnabledPWMGlobal(uint8_t val, uint8_t mask)
-{
-    uint16_t pulse_res = 20000;//TODO if servo mode use 20000 value else from reg
-    uint16_t pulse_clk = 50;//TODO if servo mode use 50 value else from reg
-    uint32_t pre_scale = (SystemCoreClock / (pulse_res * pulse_clk)) - 1;
-
-    if (mask & 0x01U) {
-        if (val) {
-            TIM1_Handle.Instance->ARR = (uint32_t) pulse_res;
-            TIM1_Handle.Instance->PSC = (uint32_t) pre_scale;
-
-            TIM1_Handle.Instance->BDTR |= (TIM_BDTR_MOE);
-        } else {
-            TIM1_Handle.Instance->BDTR &= ~(TIM_BDTR_MOE);
-        }
-    }
-
-    if (mask & 0x02U) {
-        if (val) {
-            TIM4_Handle.Instance->ARR = (uint32_t) pulse_res;
-            TIM4_Handle.Instance->PSC = (uint32_t) pre_scale;
-
-            TIM4_Handle.Instance->BDTR |= (TIM_BDTR_MOE);
-        } else {
-            TIM4_Handle.Instance->BDTR &= ~(TIM_BDTR_MOE);
-        }
-    }
-}
-
-void ____setEnabledPWMChannel(uint8_t val, uint8_t mask)
-{
-    uint8_t mask1 = mask & 0x0FU; // Get lower 4 bits as mask for group 1
-    uint8_t mask2 = mask >> 4U;   // Get upper 4 bits as mask for group 2
-
-    HAL_StatusTypeDef (*callable)(TIM_HandleTypeDef *handle, uint32_t channel);
-
-    if (val) {
-        callable = HAL_TIM_PWM_Start; // If enable requested - start channel PWM
-    } else {
-        callable = HAL_TIM_PWM_Stop; // If disable requested - stop channel PWM
-    }
-
-    // Process group 1
-    if (mask1 & TIM_CHANNEL_1) {
-        callable(&TIM1_Handle, TIM_CHANNEL_1);
-    }
-    if (mask1 & TIM_CHANNEL_2) {
-        callable(&TIM1_Handle, TIM_CHANNEL_2);
-    }
-    if (mask1 & TIM_CHANNEL_3) {
-        callable(&TIM1_Handle, TIM_CHANNEL_3);
-    }
-    if (mask1 & TIM_CHANNEL_4) {
-        callable(&TIM1_Handle, TIM_CHANNEL_4);
-    }
-
-    // Process group 2
-    if (mask2 & TIM_CHANNEL_1) {
-        callable(&TIM4_Handle, TIM_CHANNEL_1);
-    }
-    if (mask2 & TIM_CHANNEL_2) {
-        callable(&TIM4_Handle, TIM_CHANNEL_2);
-    }
-    if (mask2 & TIM_CHANNEL_3) {
-        callable(&TIM4_Handle, TIM_CHANNEL_3);
-    }
-    if (mask2 & TIM_CHANNEL_4) {
-        callable(&TIM4_Handle, TIM_CHANNEL_4);
     }
 }
 
