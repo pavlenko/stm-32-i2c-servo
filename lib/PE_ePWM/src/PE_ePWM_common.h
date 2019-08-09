@@ -1,6 +1,6 @@
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __TEMPLATE_H
-#define __TEMPLATE_H
+#ifndef PE_ePWM_COMMON_H
+#define PE_ePWM_COMMON_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,6 +8,11 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
+
+/** Registers *****************************************************************/
+
+//TODO move registers code here & create reg list with possibility autoincrement addr for allow write multiple channel values???
+
 /* Exported types ------------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported function prototypes --------------------------------------------- */
@@ -18,4 +23,4 @@ extern "C" {
 }
 #endif
 
-#endif //__TEMPLATE_H
+#endif //PE_ePWM_COMMON_H
