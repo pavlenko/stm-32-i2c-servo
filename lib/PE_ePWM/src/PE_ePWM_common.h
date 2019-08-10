@@ -9,6 +9,10 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 
+#define PE_ePWM_SERVO_MIN 600
+#define PE_ePWM_SERVO_MID 1450
+#define PE_ePWM_SERVO_MAX 2300
+
 /** Registers *****************************************************************/
 
 //TODO move registers code here & create reg list with possibility autoincrement addr for allow write multiple channel values???

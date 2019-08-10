@@ -10,6 +10,8 @@ extern "C" {
 
 #include <stdint.h>
 
+#include "PE_ePWM_common.h"
+
 /* Exported constants --------------------------------------------------------*/
 
 /** Instructions **************************************************************/

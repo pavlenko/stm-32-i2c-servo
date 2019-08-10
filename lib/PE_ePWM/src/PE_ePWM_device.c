@@ -9,6 +9,7 @@
 /* Private function prototypes -----------------------------------------------*/
 
 long PE_ePWM_device_map(long x, long in_min, long in_max, long out_min, long out_max);
+void PE_ePWM_device_setMode(PE_ePWM_device_t *pwm, PE_ePWM_MODE_t mode);
 void PE_ePWM_device_setPulse(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t pulse, uint16_t durationMS);
 void PE_ePWM_device_setAngle(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel, uint16_t angle, uint16_t durationMS);
 
@@ -134,6 +135,30 @@ __attribute__((weak)) void PE_ePWM_device_updateCH(PE_ePWM_device_t *pwm, PE_ePW
 long PE_ePWM_device_map(long x, long in_min, long in_max, long out_min, long out_max)
 {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+/**
+ * Set driver mode, currently only PULSE and SERVO modes supports
+ *
+ * @param pwm
+ * @param mode
+ */
+void PE_ePWM_device_setMode(PE_ePWM_device_t *pwm, PE_ePWM_MODE_t mode)
+{
+    //TODO save mode to pwm instance
+    if ((pwm->registers[PE_ePWM_REG_CONFIG] & PE_ePWM_CONFIG_MODE) != mode) {
+        if (mode == PE_ePWM_MODE_SERVO) {
+            for (uint8_t i = 0; i < 8; i++) {
+                pwm->channels[i].min = PE_ePWM_SERVO_MIN;
+                pwm->channels[i].max = PE_ePWM_SERVO_MAX;
+
+                pwm->channels[i].source = PE_ePWM_SERVO_MID;
+                pwm->channels[i].target = PE_ePWM_SERVO_MID;
+
+                PE_ePWM_device_updateCH(pwm, i);
+            }
+        }
+    }
 }
 
 /**
