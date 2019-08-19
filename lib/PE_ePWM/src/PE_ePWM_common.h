@@ -15,6 +15,7 @@ extern "C" {
 
 /** Registers *****************************************************************/
 
+//TODO change logic to all registers are 16bit, pulse and duration must be alternated (чередоваться)
 //TODO move registers code here & create reg list with possibility autoincrement addr for allow write multiple channel values???
 
 /* Exported types ------------------------------------------------------------*/
