@@ -42,6 +42,7 @@ void PE_ePWM_device_onReceive(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t size
 void PE_ePWM_device_onRequest(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t *size);
 void PE_ePWM_device_dispatch(PE_ePWM_device_t *pwm);
 void PE_ePWM_device_updateCH(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel);
+void PE_ePWM_device_setEnabledCH(uint8_t mask);
 
 #ifdef __cplusplus
 }

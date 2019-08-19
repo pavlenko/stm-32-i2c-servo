@@ -132,6 +132,11 @@ __attribute__((weak)) void PE_ePWM_device_updateCH(PE_ePWM_device_t *pwm, PE_ePW
     (void) channel;
 }
 
+__attribute__((weak)) void PE_ePWM_device_setEnabledCH(uint8_t mask)
+{
+    (void) mask;
+}
+
 long PE_ePWM_device_map(long x, long in_min, long in_max, long out_min, long out_max)
 {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -230,48 +235,5 @@ void ____setEnabledPWMGlobal(uint8_t val, uint8_t mask)
         } else {
             TIM4_Handle.Instance->BDTR &= ~(TIM_BDTR_MOE);
         }
-    }
-}
-
-//TODO weak
-void ____setEnabledPWMChannel(uint8_t val, uint8_t mask)
-{
-    uint8_t mask1 = mask & 0x0FU; // Get lower 4 bits as mask for group 1
-    uint8_t mask2 = mask >> 4U;   // Get upper 4 bits as mask for group 2
-
-    HAL_StatusTypeDef (*callable)(TIM_HandleTypeDef *handle, uint32_t channel);
-
-    if (val) {
-        callable = HAL_TIM_PWM_Start; // If enable requested - start channel PWM
-    } else {
-        callable = HAL_TIM_PWM_Stop; // If disable requested - stop channel PWM
-    }
-
-    // Process group 1
-    if (mask1 & TIM_CHANNEL_1) {
-        callable(&TIM1_Handle, TIM_CHANNEL_1);
-    }
-    if (mask1 & TIM_CHANNEL_2) {
-        callable(&TIM1_Handle, TIM_CHANNEL_2);
-    }
-    if (mask1 & TIM_CHANNEL_3) {
-        callable(&TIM1_Handle, TIM_CHANNEL_3);
-    }
-    if (mask1 & TIM_CHANNEL_4) {
-        callable(&TIM1_Handle, TIM_CHANNEL_4);
-    }
-
-    // Process group 2
-    if (mask2 & TIM_CHANNEL_1) {
-        callable(&TIM4_Handle, TIM_CHANNEL_1);
-    }
-    if (mask2 & TIM_CHANNEL_2) {
-        callable(&TIM4_Handle, TIM_CHANNEL_2);
-    }
-    if (mask2 & TIM_CHANNEL_3) {
-        callable(&TIM4_Handle, TIM_CHANNEL_3);
-    }
-    if (mask2 & TIM_CHANNEL_4) {
-        callable(&TIM4_Handle, TIM_CHANNEL_4);
     }
 }

@@ -218,6 +218,39 @@ void PE_ePWM_device_updateCH(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel)
     }
 }
 
+void PE_ePWM_device_setEnabledCH(uint8_t mask)
+{
+    // First reset all channels output enable bits
+    TIM1_Handle.Instance->CCER = ~(TIM_CCER_CC4E|TIM_CCER_CC3E|TIM_CCER_CC2E|TIM_CCER_CC1E);
+    TIM4_Handle.Instance->CCER = ~(TIM_CCER_CC4E|TIM_CCER_CC3E|TIM_CCER_CC2E|TIM_CCER_CC1E);
+
+    // Check each channel bit and set associated timer & timer bit
+    if (mask & PE_ePWM_CH0) {
+        TIM1_Handle.Instance->CCER |= TIM_CHANNEL_1;
+    }
+    if (mask & PE_ePWM_CH1) {
+        TIM1_Handle.Instance->CCER |= TIM_CHANNEL_2;
+    }
+    if (mask & PE_ePWM_CH2) {
+        TIM1_Handle.Instance->CCER |= TIM_CHANNEL_3;
+    }
+    if (mask & PE_ePWM_CH3) {
+        TIM1_Handle.Instance->CCER |= TIM_CHANNEL_4;
+    }
+    if (mask & PE_ePWM_CH4) {
+        TIM4_Handle.Instance->CCER |= TIM_CHANNEL_1;
+    }
+    if (mask & PE_ePWM_CH5) {
+        TIM4_Handle.Instance->CCER |= TIM_CHANNEL_2;
+    }
+    if (mask & PE_ePWM_CH6) {
+        TIM4_Handle.Instance->CCER |= TIM_CHANNEL_3;
+    }
+    if (mask & PE_ePWM_CH7) {
+        TIM4_Handle.Instance->CCER |= TIM_CHANNEL_4;
+    }
+}
+
 /**
  * @param i2c
  */
