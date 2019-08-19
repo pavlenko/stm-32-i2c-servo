@@ -251,6 +251,34 @@ void PE_ePWM_device_setEnabledCH(uint8_t mask)
     }
 }
 
+void PE_ePWM_device_setEnabledPWMGroup(PE_ePWM_device_t *pwm, uint8_t mask)
+{
+    // First disable all groups outputs
+    TIM1_Handle.Instance->BDTR &= ~(TIM_BDTR_MOE);
+    TIM4_Handle.Instance->BDTR &= ~(TIM_BDTR_MOE);
+
+    // Calculate pre-scale
+    uint16_t pulseReset = (uint32_t) pwm->pulseReset;
+    uint16_t pulseClock = (uint32_t) pwm->pulseClock;
+    uint32_t preScale   = (SystemCoreClock / (pulseReset * pulseClock)) - 1;
+
+    // Enable group 1 if needed
+    if (mask & 0x01U) {
+        TIM1_Handle.Instance->ARR = pulseReset;
+        TIM1_Handle.Instance->PSC = preScale;
+
+        TIM1_Handle.Instance->BDTR |= (TIM_BDTR_MOE);
+    }
+
+    // Enable group 2 if needed
+    if (mask & 0x02U) {
+        TIM4_Handle.Instance->ARR = pulseReset;
+        TIM4_Handle.Instance->PSC = preScale;
+
+        TIM4_Handle.Instance->BDTR |= (TIM_BDTR_MOE);
+    }
+}
+
 /**
  * @param i2c
  */

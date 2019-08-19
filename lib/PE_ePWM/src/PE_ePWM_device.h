@@ -27,9 +27,9 @@ typedef struct {
 
 typedef struct {
     PE_ePWM_channel_t channels[8];
-    uint8_t  cmd;
-    uint8_t  reg;
-    uint8_t  registers[4];
+    uint8_t cmd;
+    uint8_t reg;
+    uint8_t registers[4];
 } PE_ePWM_device_t;
 
 /* Exported constants --------------------------------------------------------*/
