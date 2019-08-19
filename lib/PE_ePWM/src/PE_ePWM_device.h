@@ -30,10 +30,6 @@ typedef struct {
     uint8_t  cmd;
     uint8_t  reg;
     uint8_t  registers[4];
-    uint16_t pulses[8];
-    uint16_t periods[8];
-    uint16_t min[8];//TODO remove
-    uint16_t max[8];//TODO remove
 } PE_ePWM_device_t;
 
 /* Exported constants --------------------------------------------------------*/
