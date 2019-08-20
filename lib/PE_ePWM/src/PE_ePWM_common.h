@@ -15,6 +15,19 @@ extern "C" {
 
 /** Registers *****************************************************************/
 
+#define PE_ePWM_REG_CONFIG_MODE
+#define PE_ePWM_REG_CONFIG_PWM_CLOCK
+#define PE_ePWM_REG_CONFIG_PWM_RESET
+//...
+#define PE_ePWM_REG_CHx_MIN
+#define PE_ePWM_REG_CHx_MAX
+//...
+#define PE_ePWM_REG_CHx_PULSE
+#define PE_ePWM_REG_CHx_SPEED
+//...
+#define PE_ePWM_REG_CHx_ANGLE
+#define PE_ePWM_REG_CHx_SPEED
+
 //TODO change logic to all registers are 16bit, pulse and duration must be alternated (чередоваться)
 //TODO move registers code here & create reg list with possibility autoincrement addr for allow write multiple channel values???
 
