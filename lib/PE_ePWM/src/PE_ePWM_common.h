@@ -15,21 +15,52 @@ extern "C" {
 
 /** Registers *****************************************************************/
 
-#define PE_ePWM_REG_CONFIG_MODE
-#define PE_ePWM_REG_CONFIG_PWM_CLOCK
-#define PE_ePWM_REG_CONFIG_PWM_RESET
-//...
-#define PE_ePWM_REG_CHx_MIN
-#define PE_ePWM_REG_CHx_MAX
-//...
-#define PE_ePWM_REG_CHx_PULSE
-#define PE_ePWM_REG_CHx_SPEED
-//...
-#define PE_ePWM_REG_CHx_ANGLE
-#define PE_ePWM_REG_CHx_SPEED
+/**
+ * Descriptions:
+ * All registers are 16bit
+ * Write to each register from CH0_MIN increment internal address pointer
+ * - CONFIG_PWM_CLOCK and CONFIG_PWM_RESET register values ignored in SERVO mode
+ * - *_MIN and *_MAX registers accept pulse width limits for both modes
+ * - *_MIN and *_MAX registers in SERVO mode also used for map value range
+ * - *_VALUE registers accept pulse width for PWM mode and degree * 10 for SERVO mode
+ * - *_SPEED registers accept duration in milliseconds for both modes
+ */
 
-//TODO change logic to all registers are 16bit, pulse and duration must be alternated (чередоваться)
-//TODO move registers code here & create reg list with possibility autoincrement addr for allow write multiple channel values???
+#define PE_ePWM_REG_CONFIG_MODE      0x00U
+#define PE_ePWM_REG_CONFIG_PWM_CLOCK 0x01U
+#define PE_ePWM_REG_CONFIG_PWM_RESET 0x02U
+#define PE_ePWM_REG_CH0_MIN          0x20U
+#define PE_ePWM_REG_CH0_MAX          0x21U
+#define PE_ePWM_REG_CH1_MIN          0x22U
+#define PE_ePWM_REG_CH1_MAX          0x23U
+#define PE_ePWM_REG_CH2_MIN          0x24U
+#define PE_ePWM_REG_CH2_MAX          0x25U
+#define PE_ePWM_REG_CH3_MIN          0x26U
+#define PE_ePWM_REG_CH3_MAX          0x27U
+#define PE_ePWM_REG_CH4_MIN          0x28U
+#define PE_ePWM_REG_CH4_MAX          0x29U
+#define PE_ePWM_REG_CH5_MIN          0x2AU
+#define PE_ePWM_REG_CH5_MAX          0x2BU
+#define PE_ePWM_REG_CH6_MIN          0x2CU
+#define PE_ePWM_REG_CH6_MAX          0x2DU
+#define PE_ePWM_REG_CH7_MIN          0x2EU
+#define PE_ePWM_REG_CH7_MAX          0x2FU
+#define PE_ePWM_REG_CH0_VALUE        0x20U
+#define PE_ePWM_REG_CH0_SPEED        0x21U
+#define PE_ePWM_REG_CH1_VALUE        0x22U
+#define PE_ePWM_REG_CH1_SPEED        0x23U
+#define PE_ePWM_REG_CH2_VALUE        0x24U
+#define PE_ePWM_REG_CH2_SPEED        0x25U
+#define PE_ePWM_REG_CH3_VALUE        0x26U
+#define PE_ePWM_REG_CH3_SPEED        0x27U
+#define PE_ePWM_REG_CH4_VALUE        0x28U
+#define PE_ePWM_REG_CH4_SPEED        0x29U
+#define PE_ePWM_REG_CH5_VALUE        0x2AU
+#define PE_ePWM_REG_CH5_SPEED        0x2BU
+#define PE_ePWM_REG_CH6_VALUE        0x2CU
+#define PE_ePWM_REG_CH6_SPEED        0x2DU
+#define PE_ePWM_REG_CH7_VALUE        0x2EU
+#define PE_ePWM_REG_CH7_SPEED        0x2FU
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
