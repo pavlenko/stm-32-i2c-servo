@@ -61,12 +61,51 @@ extern "C" {
 #define PE_ePWM_REG_CH6_SPEED        0x2DU
 #define PE_ePWM_REG_CH7_VALUE        0x2EU
 #define PE_ePWM_REG_CH7_SPEED        0x2FU
+#define PE_ePWM_REG_NONE             0xFFU
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported function prototypes --------------------------------------------- */
 /* Exported variables --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
+
+uint8_t address = PE_ePWM_REG_NONE;
+uint16_t registers[PE_ePWM_REG_CH7_SPEED];
+
+// Trigger on receive completed
+void onReceive(uint8_t *data, uint8_t size)
+{
+    address = *data;
+
+    if (size > 1) {
+        uint8_t offset = 1;
+        uint8_t length = size - 1;
+
+        // write register in autoincrement mode
+        while (length > 2) {
+            registers[address] = (uint16_t) *(data + offset);
+
+            offset += 2;
+            length -= 2;
+        }
+    }
+}
+
+// Trigger on data requested
+void onRequest(uint8_t *data, uint8_t *size)
+{
+    if (address) {
+        uint8_t offset = 0;
+
+        for (; address < PE_ePWM_REG_CH7_SPEED; address++) {
+            *((uint16_t *) (data + offset)) = registers[address];
+
+            offset += 2;
+        }
+
+        *size = offset;
+    }
+}
 
 #ifdef __cplusplus
 }
