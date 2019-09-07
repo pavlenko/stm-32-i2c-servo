@@ -62,6 +62,12 @@ __attribute__((weak)) void MX_I2C_onRequest(I2C_t *i2c)
     (void) i2c;
 }
 
+__attribute__((weak)) void MX_I2C_onReceiveByte(I2C_t *i2c, uint8_t index)
+{
+    (void) i2c;
+    (void) index;
+}
+
 /**
  * Called in I2C slave RX mode after address and data received
  *
@@ -116,6 +122,8 @@ void I2Cx_onAddressReceived(I2C_t *i2c, uint8_t direction)
 
 void I2Cx_onSlaveRXCompleted(I2C_t *i2c)
 {
+    MX_I2C_onReceiveByte(i2c, i2c->rxBufferSize);
+
     if (HAL_I2C_Slave_Sequential_Receive_IT(i2c->handle, &(i2c->rxBufferData[i2c->rxBufferSize]), 1, I2C_FIRST_FRAME) != HAL_OK) {
         Error_Handler(__FILE__, __LINE__);
     }

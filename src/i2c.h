@@ -40,6 +40,15 @@ void MX_I2C_Init(I2C_TypeDef *i2c, I2C_HandleTypeDef *handle, uint16_t address);
 void MX_I2C_dispatch(I2C_t *i2c);
 
 void MX_I2C_onRequest(I2C_t *i2c);
+
+/**
+ * Called in I2C slave RX mode after each byte received
+ * Used for allow process data while reception in progress
+ *
+ * @param i2c
+ * @param index
+ */
+void MX_I2C_onReceiveByte(I2C_t *i2c, uint8_t index);
 void MX_I2C_onReceive(I2C_t *i2c);
 void MX_I2C_onSuccess(I2C_t *i2c);
 void MX_I2C_onFailure(I2C_t *i2c);
