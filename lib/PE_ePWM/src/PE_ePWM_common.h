@@ -25,7 +25,7 @@ extern "C" {
  * - *_VALUE registers accept pulse width for PWM mode and degree * 10 for SERVO mode
  * - *_SPEED registers accept duration in milliseconds for both modes
  */
-
+//TODO immediate update timers if pwm config changed
 #define PE_ePWM_REG_CONFIG_MODE      0x00U
 #define PE_ePWM_REG_CONFIG_PWM_CLOCK 0x01U
 #define PE_ePWM_REG_CONFIG_PWM_RESET 0x02U
@@ -62,6 +62,49 @@ extern "C" {
 #define PE_ePWM_REG_CH7_VALUE        0x2EU
 #define PE_ePWM_REG_CH7_SPEED        0x2FU
 #define PE_ePWM_REG_NONE             0xFFU
+
+/** CONFIG_MODE bits **********************************************************/
+
+#define PE_ePWM_CONFIG_EN_CH_0_Pos  (0x0U)
+#define PE_ePWM_CONFIG_EN_CH_0_Msk  (0x1U << PE_ePWM_CONFIG_EN_CH_0_Pos)
+
+#define PE_ePWM_CONFIG_EN_CH_1_Pos  (0x1U)
+#define PE_ePWM_CONFIG_EN_CH_1_Msk  (0x1U << PE_ePWM_CONFIG_EN_CH_1_Pos)
+
+#define PE_ePWM_CONFIG_EN_CH_2_Pos  (0x2U)
+#define PE_ePWM_CONFIG_EN_CH_2_Msk  (0x1U << PE_ePWM_CONFIG_EN_CH_2_Pos)
+
+#define PE_ePWM_CONFIG_EN_CH_3_Pos  (0x3U)
+#define PE_ePWM_CONFIG_EN_CH_3_Msk  (0x1U << PE_ePWM_CONFIG_EN_CH_3_Pos)
+
+#define PE_ePWM_CONFIG_EN_CH_4_Pos  (0x4U)
+#define PE_ePWM_CONFIG_EN_CH_4_Msk  (0x1U << PE_ePWM_CONFIG_EN_CH_4_Pos)
+
+#define PE_ePWM_CONFIG_EN_CH_5_Pos  (0x5U)
+#define PE_ePWM_CONFIG_EN_CH_5_Msk  (0x1U << PE_ePWM_CONFIG_EN_CH_5_Pos)
+
+#define PE_ePWM_CONFIG_EN_CH_6_Pos  (0x6U)
+#define PE_ePWM_CONFIG_EN_CH_6_Msk  (0x1U << PE_ePWM_CONFIG_EN_CH_6_Pos)
+
+#define PE_ePWM_CONFIG_EN_CH_7_Pos  (0x7U)
+#define PE_ePWM_CONFIG_EN_CH_7_Msk  (0x1U << PE_ePWM_CONFIG_EN_CH_7_Pos)
+
+#define PE_ePWM_CONFIG_SERVO_Pos    (0x8U)
+#define PE_ePWM_CONFIG_SERVO_Msk    (0x1U << PE_ePWM_CONFIG_SERVO_Pos)
+
+#define PE_ePWM_CONFIG_EN_PWR_Pos   (0x9U)
+#define PE_ePWM_CONFIG_EN_PWR_Msk   (0x1U << PE_ePWM_CONFIG_EN_PWR_Pos)
+
+#define PE_ePWM_CONFIG_EN_PWM_0_Pos (0xAU)
+#define PE_ePWM_CONFIG_EN_PWM_0_Msk (0x1U << PE_ePWM_CONFIG_EN_PWM_0_Pos)
+
+#define PE_ePWM_CONFIG_EN_PWM_1_Pos (0xBU)
+#define PE_ePWM_CONFIG_EN_PWM_1_Msk (0x1U << PE_ePWM_CONFIG_EN_PWM_1_Pos)
+
+#define PE_ePWM_CONFIG_RESERVED_0   (0xCU)
+#define PE_ePWM_CONFIG_RESERVED_1   (0xDU)
+#define PE_ePWM_CONFIG_RESERVED_2   (0xEU)
+#define PE_ePWM_CONFIG_RESERVED_3   (0xFU)
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
