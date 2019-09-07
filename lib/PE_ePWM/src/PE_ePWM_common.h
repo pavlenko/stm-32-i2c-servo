@@ -117,6 +117,17 @@ extern "C" {
 /* Exported variables --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 
+//TODO autoincrement enable only for ranges:
+//TODO PE_ePWM_REG_CH0_MIN ... PE_ePWM_REG_CH7_MAX
+//TODO PE_ePWM_REG_CH0_VALUE ... PE_ePWM_REG_CH7_SPEED
+
+//TODO allow on receive byte logic
+//TODO reset autoincrement on start transaction
+//TODO allow client lib to use transactions logic???
+
+//TODO if command == PE_ePWM_REGISTER_GET - next byte is response size
+//TODO if command == PE_ePWM_REGISTER_SET - next bytes is payload
+
 uint8_t address = PE_ePWM_REG_NONE;
 uint16_t registers[PE_ePWM_REG_CH7_SPEED];
 
