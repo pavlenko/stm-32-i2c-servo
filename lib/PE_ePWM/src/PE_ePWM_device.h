@@ -26,6 +26,9 @@ typedef struct {
 } PE_ePWM_channel_t;
 
 typedef struct {
+    uint16_t config;
+    uint16_t pwmClock;
+    uint16_t pwmReset;
     PE_ePWM_channel_t channels[8];
     uint8_t cmd;
     uint8_t reg;
@@ -37,6 +40,13 @@ typedef struct {
 /* Exported function prototypes --------------------------------------------- */
 /* Exported variables --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
+
+/**
+ * Update internal driver state based on pwm->config, called on receive
+ *
+ * @param pwm
+ */
+void PE_ePWM_device_updateConfig(PE_ePWM_device_t *pwm);
 
 void PE_ePWM_device_onReceive(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t size);
 void PE_ePWM_device_onRequest(PE_ePWM_device_t *pwm, uint8_t *data, uint8_t *size);
