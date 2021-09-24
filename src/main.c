@@ -60,7 +60,7 @@ void SystemClock_Config(void);
  */
 int main(void)
 {
-    uint8_t address;
+    uint16_t _address;
 
     HAL_Init();
 
@@ -97,10 +97,10 @@ int main(void)
     MX_ADDR_Init();
     MX_LED_Init();
 
-    address = MX_ADDR_Read();
-    address = address << 1u;
+    _address = (uint16_t) MX_ADDR_Read();
+    _address = _address << 1u;
 
-    MX_I2C_Init(I2C2, I2Cx.handle, address);
+    MX_I2C_Init(I2C2, I2Cx.handle, _address);
 
     uint32_t tick = HAL_GetTick();
 
@@ -191,7 +191,7 @@ void HAL_MspDeInit(void)
 void PE_ePWM_device_updateCH(PE_ePWM_device_t *pwm, PE_ePWM_CHANNEL_N_t channel)
 {
     TIM_TypeDef *tim;
-    uint8_t num;
+    PE_ePWM_CHANNEL_N_t num;
     if (channel < 4) {
         num = channel;
         tim = TIM1_Handle.Instance;
@@ -258,8 +258,8 @@ void PE_ePWM_device_setEnabledPWMGroup(PE_ePWM_device_t *pwm, uint8_t mask)
     TIM4_Handle.Instance->BDTR &= ~(TIM_BDTR_MOE);
 
     // Calculate pre-scale
-    uint16_t pulseReset = (uint32_t) pwm->pulseReset;
-    uint16_t pulseClock = (uint32_t) pwm->pulseClock;
+    uint16_t pulseReset = pwm->pwmReset;
+    uint16_t pulseClock = pwm->pwmClock;
     uint32_t preScale   = (SystemCoreClock / (pulseReset * pulseClock)) - 1;
 
     // Enable group 1 if needed
